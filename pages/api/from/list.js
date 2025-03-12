@@ -10,6 +10,7 @@ export default async function GetListAPI(req, res) {
                 WHEN '2' THEN '健身房' 
             END department
         FROM form 
+        ORDER BY id DESC
     `;
     let result = await pool.query(sql);
     res.status(200).json(result.rows);

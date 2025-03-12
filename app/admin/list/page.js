@@ -5,10 +5,12 @@ import { Button } from "@/components/button";
 import { Dialog, DialogActions, DialogBody, DialogDescription, DialogTitle } from "@/components/dialog";
 import { Field, Label } from "@/components/fieldset";
 import { useEffect, useState } from "react";
+import { QRCodeSVG } from "qrcode.react";
 
 export default function Home() {
   let [isOpen, setIsOpen] = useState(false);
   const [formList, setFormList] = useState([]);
+  const [QRCode, setQRCode] = useState("");
 
   async function getFrom() {
     const config = {
@@ -59,8 +61,9 @@ export default function Home() {
         onClose={setIsOpen}
       >
         <DialogTitle>QRCode</DialogTitle>
-
-        <DialogBody></DialogBody>
+        <DialogBody>
+          <div className="mt-3 flex items-center justify-center">{QRCode != "" && <QRCodeSVG value={QRCode} />}</div>
+        </DialogBody>
         <DialogActions>
           <Button
             plain
@@ -112,7 +115,10 @@ export default function Home() {
                 <Button
                   className="mx-1"
                   type="button"
-                  onClick={() => setIsOpen(true)}
+                  onClick={() => {
+                    setIsOpen(true);
+                    setQRCode(`http://172.16.150.23:3000/?id=${item.id}`);
+                  }}
                 >
                   QRCode
                 </Button>

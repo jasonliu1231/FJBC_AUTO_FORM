@@ -62,14 +62,10 @@ export default function Home() {
           className="editor p-4"
         />
       </div>
-      <div className="max-w-full">
-        <div
-          dangerouslySetInnerHTML={{ __html: form.content }}
-          className="editor p-4"
-        />
-      </div>
+
       <div className="px-5">
-        <div className="text-center text-red-400">活動期限：{new Date(form.deadline).toLocaleString()}</div>
+        {form.deadline && <div className="text-center text-red-400">活動期限：{new Date(form.deadline).toLocaleString()}</div>}
+
         {detail.map((items) => (
           <div
             className="p-5"
