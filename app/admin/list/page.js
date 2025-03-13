@@ -110,7 +110,7 @@ export default function Home() {
                     window.location.href = `/?id=${item.id}`;
                   }}
                 >
-                  連結
+                  表單
                 </Button>
                 <Button
                   className="mx-1"
@@ -130,6 +130,15 @@ export default function Home() {
                   }}
                 >
                   修改
+                </Button>
+                <Button
+                  className="mx-1"
+                  type="button"
+                  onClick={() => {
+                    window.location.href = `/admin/analysis?id=${item.id}`;
+                  }}
+                >
+                  統計
                 </Button>
               </TableCell>
             </TableRow>

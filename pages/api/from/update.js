@@ -6,17 +6,28 @@ export default async function UpdateAPI(req, res) {
 
   try {
     await pool.query("BEGIN");
-    // 新增主體
     let sql = `
+        SELECT id FROM form_return_list WHERE form_id = $1
+    `;
+    let params = [body.id];
+    let result = await pool.query(sql, params);
+
+    if (result.rows.length > 0) {
+      res.status(400).json({
+        msg: "表單已有人填寫，無法修改！"
+      });
+      return;
+    }
+
+    sql = `
       UPDATE form SET name=$1, banner=$2, content=$3, deadline=$4, auto_open=$5, auto_close=$6, department=$7 WHERE id =$8
     `;
-    let params = [body.name, body.banner, body.content, body.deadline, body.auto_open, body.auto_close, body.department, body.id];
+    params = [body.name, body.banner, body.content, body.deadline, body.auto_open, body.auto_close, body.department, body.id];
     await pool.query(sql, params);
 
-    // 新增選項
     for (let i = 0; i < body.detail.length; i++) {
       sql = `SELECT * FROM form_detail WHERE id = $1`;
-      let result = await pool.query(sql, [body.detail[i].id]);
+      result = await pool.query(sql, [body.detail[i].id]);
       if (result.rows.length == 0) {
         sql = `
         INSERT INTO form_detail(form_id, index, type, required, title, enable)

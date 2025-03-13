@@ -105,7 +105,7 @@ export default function Home() {
     if (response.ok) {
       alert("FINISH");
     } else {
-      alert("ERROR");
+      alert(res.msg);
     }
   }
 

@@ -9,7 +9,9 @@ export default async function DetailAPI(req, res) {
             GROUP BY detail_id
         )
 
-        SELECT id, form_id, index, type, required, title, enable, content FROM form_detail
+        SELECT 
+          id, form_id, index, type, required, title, enable, COALESCE(content, ARRAY[]::text[]) AS content
+        FROM form_detail
         LEFT JOIN detail_content ON detail_id = form_detail.id
         WHERE form_detail.form_id = $1
         ORDER BY form_detail.index
