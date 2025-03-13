@@ -3,9 +3,7 @@ import pool from "../../../sql_conn/activity";
 export default async function DetailAPI(req, res) {
   const id = req.query.id;
   try {
-    let sql = `
-        SELECT * FROM form WHERE id = $1 AND enable=true
-    `;
+    let sql = `SELECT * FROM form WHERE id = $1 AND enable=true`;
     let result = await pool.query(sql, [id]);
     if (result.rows.length == 0) {
       res.status(400).json({ msg: "活動表單已關閉" });
