@@ -3,12 +3,11 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
 import { Button } from "@/components/button";
 import { Dialog, DialogActions, DialogBody, DialogDescription, DialogTitle } from "@/components/dialog";
-import { Field, Label } from "@/components/fieldset";
 import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 
 export default function Home() {
-  let [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [formList, setFormList] = useState([]);
   const [QRCode, setQRCode] = useState("");
 
@@ -82,6 +81,7 @@ export default function Home() {
             <TableHeader>自動開啟</TableHeader>
             <TableHeader>自動關閉</TableHeader>
             <TableHeader>單位</TableHeader>
+            <TableHeader>類別</TableHeader>
             <TableHeader>狀態</TableHeader>
             <TableHeader></TableHeader>
           </TableRow>
@@ -94,6 +94,7 @@ export default function Home() {
               <TableCell>{item.auto_open && new Date(item.auto_open).toLocaleDateString()}</TableCell>
               <TableCell>{item.auto_close && new Date(item.auto_close).toLocaleDateString()}</TableCell>
               <TableCell>{item.department}</TableCell>
+              <TableCell>{item.category}</TableCell>
               <TableCell>{item.enable ? "開啟中" : "關閉中"}</TableCell>
               <TableCell>
                 <Button

@@ -7,10 +7,10 @@ export default async function CreateAPI(req, res) {
     await pool.query("BEGIN");
     // 新增主體
     let sql = `
-      INSERT INTO form(name, banner, content, deadline, auto_open, auto_close, department)
-      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id
+      INSERT INTO form(name, banner, content, deadline, auto_open, auto_close, department_id, category_id, finish_photo, finish_message)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id
     `;
-    let params = [body.name, body.banner, body.content, body.deadline, body.auto_open, body.auto_close, body.department];
+    let params = [body.name, body.banner, body.content, body.deadline, body.auto_open, body.auto_close, body.department_id, body.category_id, body.finish_photo, body.finish_message];
     let form = await pool.query(sql, params);
 
     // 新增選項

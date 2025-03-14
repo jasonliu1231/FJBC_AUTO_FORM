@@ -43,16 +43,9 @@ export default function Home({ form_id }) {
         <TableBody>
           {returnData.form_return_list?.map((item, index) => (
             <TableRow key={index}>
-              {item.items0 != null && <TableCell>{item.items0}</TableCell>}
-              {item.items1 != null && <TableCell>{item.items1}</TableCell>}
-              {item.items2 != null && <TableCell>{item.items2}</TableCell>}
-              {item.items3 != null && <TableCell>{item.items3}</TableCell>}
-              {item.items4 != null && <TableCell>{item.items4}</TableCell>}
-              {item.items5 != null && <TableCell>{item.items5}</TableCell>}
-              {item.items6 != null && <TableCell>{item.items6}</TableCell>}
-              {item.items7 != null && <TableCell>{item.items7}</TableCell>}
-              {item.items8 != null && <TableCell>{item.items8}</TableCell>}
-              {item.items9 != null && <TableCell>{item.items9}</TableCell>}
+              {Array.from({ length: returnData.form_title?.length }, (_, index) => {
+                return <TableCell key={`items${index}`}>{item[`items${index}`]}</TableCell>;
+              })}
               <TableCell>{new Date(item.create_at).toLocaleString()}</TableCell>
             </TableRow>
           ))}

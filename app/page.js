@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Field, Description, Fieldset, Label, Legend } from "@/components/fieldset";
 import { Radio, RadioField, RadioGroup } from "@/components/radio";
 import { Checkbox, CheckboxField, CheckboxGroup } from "@/components/checkbox";
+import { Dialog, DialogActions, DialogBody, DialogDescription, DialogTitle } from "@/components/dialog";
 import { Input } from "@/components/input";
 import { Text } from "@/components/text";
 import { Button } from "@/components/button";
@@ -13,32 +14,53 @@ export default function Home() {
   const [form, setForm] = useState();
   const [detail, setDetail] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   async function checkFrom() {
     let check = true;
-    detail.forEach((item) => {
+    const list = detail.map((item) => {
       if (item.required && item.enable) {
-        if (item.type == "1") {
+        if (item.type == "1" || item.type == "4") {
           if (data[`items${item.index}`].content_value == "") {
             check = false;
-            return;
+            return {
+              ...item,
+              error: true
+            };
+          } else {
+            return item;
           }
         } else if (item.type == "2") {
           if (data[`items${item.index}`].content_id == "") {
             check = false;
-            return;
+            return {
+              ...item,
+              error: true
+            };
+          } else {
+            return item;
           }
         } else if (item.type == "3") {
           if (data[`items${item.index}`].content_id.length == 0) {
             check = false;
-            return;
+            return {
+              ...item,
+              error: true
+            };
+          } else {
+            return item;
           }
         }
+      } else {
+        return item;
       }
     });
+
     if (check) {
-      alert(`必填欄位！請幫忙填寫再送出～感謝！`);
       saveFrom();
+    } else {
+      setDetail(list);
+      alert(`必填欄位！請幫忙填寫再送出～感謝！`);
     }
   }
 
@@ -54,7 +76,7 @@ export default function Home() {
     const response = await fetch(`/api/from/save`, config);
     const res = await response.json();
     if (response.ok) {
-      alert(`感謝您的支持，謝謝您抽出寶貴的時間填寫表單！`);
+      setIsOpen(true);
     } else {
       alert(res.msg);
     }
@@ -72,9 +94,16 @@ export default function Home() {
     const res = await response.json();
     if (response.ok) {
       setForm(res.form);
-      setDetail(res.detail);
+      setDetail(
+        res.detail.map((item) => {
+          return {
+            ...item,
+            error: false
+          };
+        })
+      );
+
       const def_val = res.detail.map((item) => {
-        let type = "";
         let content_id = null;
         let content_value = "";
         if (item.type == "1") {
@@ -90,13 +119,17 @@ export default function Home() {
 
         return {
           type: item.type,
+          index: item.index,
+          enable: item.enable,
           content_id,
           content_value
         };
       });
 
       const object = def_val.reduce((acc, item, index) => {
-        acc[`items${index}`] = item;
+        if (item.enable) {
+          acc[`items${item.index}`] = item;
+        }
         return acc;
       }, {});
 
@@ -121,6 +154,31 @@ export default function Home() {
 
   return (
     <div className="max-w-md sm:max-w-xl mx-auto bg-gray-100">
+      <Dialog
+        open={isOpen}
+        onClose={setIsOpen}
+      >
+        <DialogTitle className="text-center">{form.finish_message}</DialogTitle>
+        <DialogBody>
+          {form.finish_photo && (
+            <div className="col-span-1 flex justify-center items-center bg-gray-100">
+              <img
+                src={form.finish_photo}
+                alt="Uploaded"
+                className="w-1/2"
+              />
+            </div>
+          )}
+        </DialogBody>
+        <DialogActions>
+          <Button
+            plain
+            onClick={() => setIsOpen(false)}
+          >
+            關閉
+          </Button>
+        </DialogActions>
+      </Dialog>
       <div className="">
         {form?.banner && (
           <div className="flex justify-center items-center">
@@ -146,7 +204,7 @@ export default function Home() {
           {detail.map((items) => (
             <div
               key={items.id}
-              className="my-5 bg-blue-200 rounded-xl"
+              className={`my-5 rounded-xl ${items.error ? "bg-red-200" : "bg-blue-200"}`}
             >
               {items.title != "" && items.enable && (
                 <div className="p-10">
@@ -192,14 +250,14 @@ export default function Home() {
                         }}
                       >
                         {items.content.map((item, index) => (
-                          <>
+                          <div key={index}>
                             {item.enable && (
-                              <RadioField key={index}>
+                              <RadioField>
                                 <Radio value={`${item.id}@$${item.content}`} />
                                 <Label>{item.content}</Label>
                               </RadioField>
                             )}
-                          </>
+                          </div>
                         ))}
                       </RadioGroup>
                     </Fieldset>
@@ -211,9 +269,9 @@ export default function Home() {
                       </Legend>
                       <CheckboxGroup>
                         {items.content.map((item, index) => (
-                          <>
+                          <div key={index}>
                             {item.enable && (
-                              <CheckboxField key={index}>
+                              <CheckboxField>
                                 <Checkbox
                                   name={items.id}
                                   onChange={(checked) => {
@@ -241,7 +299,7 @@ export default function Home() {
                                 <Label>{item.content}</Label>
                               </CheckboxField>
                             )}
-                          </>
+                          </div>
                         ))}
                       </CheckboxGroup>
                     </Fieldset>
@@ -260,7 +318,7 @@ export default function Home() {
                             [`items${items.index}`]: {
                               ...data[`items${items.index}`],
                               content_id: null,
-                              content_value: e.target.value
+                              content_value: new Date(e.target.value).toLocaleString()
                             }
                           });
                         }}

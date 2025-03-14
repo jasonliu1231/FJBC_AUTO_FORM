@@ -4,13 +4,13 @@ export default async function GetListAPI(req, res) {
   try {
     let sql = `
         SELECT 
-            id, name, banner, content, deadline, enable, auto_open, auto_close, create_at, create_by, update_at, update_by, 
-            CASE department 
-                WHEN '1' THEN '餐廳' 
-                WHEN '2' THEN '健身房' 
-            END department
+            form.id, form.name, form.banner, form.content, form.deadline, form.enable, auto_open, auto_close, 
+            form.create_at, form.create_by, form.update_at, form.update_by, 
+            form_department.name department, form_category.name category
         FROM form 
-        ORDER BY id DESC
+        LEFT JOIN form_department ON form.department_id = form_department.id
+        LEFT JOIN form_category ON form.category_id = form_category.id
+        ORDER BY form.create_by DESC
     `;
     let result = await pool.query(sql);
     res.status(200).json(result.rows);

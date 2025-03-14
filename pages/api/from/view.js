@@ -33,7 +33,7 @@ export default async function DetailAPI(req, res) {
     let detail = await pool.query(sql, [id]);
 
     sql = `
-        SELECT id, name, banner, content, deadline, enable, auto_open, auto_close, department FROM form
+        SELECT id, name, banner, content, deadline, enable, finish_photo, finish_message FROM form
         WHERE id = $1
     `;
     let form = await pool.query(sql, [id]);

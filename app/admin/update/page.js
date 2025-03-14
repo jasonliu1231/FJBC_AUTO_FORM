@@ -15,7 +15,7 @@ const item_def = {
   type: "1",
   required: true,
   title: "",
-  content: [{}]
+  content: [{ enable: true }]
 };
 
 function changeDate(data) {
@@ -40,16 +40,23 @@ function changeDateTime(data) {
 
 export default function Home() {
   const [form, setForm] = useState({
+    id: "",
     name: "",
     content: "",
+    enable: true,
     deadline: "",
     auto_open: "",
     auto_close: "",
-    department: "0"
+    department_id: "",
+    category_id: "",
+    finish_message: ""
   });
   const [detail, setDetail] = useState([]);
-  const [imageUrl, setImageUrl] = useState("");
   const [textareaValue, setTextareaValue] = useState("");
+  const [departmentList, setDepartmentList] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
+  const [bannerImage, setBannerImage] = useState("");
+  const [finishImage, setFinishImage] = useState("");
 
   function handleFileChange(event) {
     const file = event.target.files[0]; // 获取选中的文件
@@ -62,19 +69,16 @@ export default function Home() {
         img.onload = () => {
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
-
-          // 设置 canvas 宽高为图片的原始宽高
           canvas.width = img.width;
           canvas.height = img.height;
-
-          // 将图片绘制到 canvas 上
           ctx.drawImage(img, 0, 0, img.width, img.height);
-
-          // 生成图片的 Data URL
           const originalImageUrl = canvas.toDataURL("image/jpeg");
 
-          // 将图片的 Data URL 设置为状态
-          setImageUrl(originalImageUrl);
+          if (event.target.name === "banner") {
+            setBannerImage(originalImageUrl);
+          } else if (event.target.name === "finish_photo") {
+            setFinishImage(originalImageUrl);
+          }
         };
       };
 
@@ -83,6 +87,7 @@ export default function Home() {
   }
 
   async function updateFrom() {
+    console.log();
     const config = {
       method: "POST",
       headers: {
@@ -90,7 +95,8 @@ export default function Home() {
       },
       body: JSON.stringify({
         ...form,
-        banner: imageUrl,
+        banner: bannerImage,
+        finish_photo: finishImage,
         content: textareaValue,
         detail: detail
       })
@@ -118,8 +124,43 @@ export default function Home() {
     if (response.ok) {
       setForm(res.form);
       setDetail(res.detail);
-      setImageUrl(res.form?.banner);
+      setBannerImage(res.form?.banner);
+      setFinishImage(res.form?.finish_photo);
       setTextareaValue(res.form?.content);
+    } else {
+      alert("ERROR");
+    }
+  }
+
+  async function getCategoryList() {
+    const config = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    };
+
+    const response = await fetch(`/api/category/list`, config);
+    const res = await response.json();
+    if (response.ok) {
+      setCategoryList(res);
+    } else {
+      alert("ERROR");
+    }
+  }
+
+  async function getDepartmentList() {
+    const config = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    };
+
+    const response = await fetch(`/api/department/list`, config);
+    const res = await response.json();
+    if (response.ok) {
+      setDepartmentList(res);
     } else {
       alert("ERROR");
     }
@@ -130,6 +171,8 @@ export default function Home() {
     const params = new URLSearchParams(queryString);
     const id = params.get("id");
     getFrom(id);
+    getCategoryList();
+    getDepartmentList();
   }, []);
 
   return (
@@ -193,48 +236,108 @@ export default function Home() {
         <Field>
           <Label>單位</Label>
           <Listbox
-            name="department"
-            defaultValue="active"
-            value={form.department}
+            name="department_id"
+            value={form.department_id}
             onChange={(val) => {
               setForm({
                 ...form,
-                department: val
+                department_id: val
               });
             }}
           >
-            <ListboxOption value="1">
-              <ListboxLabel>餐廳</ListboxLabel>
-            </ListboxOption>
-            <ListboxOption value="2">
-              <ListboxLabel>健身房</ListboxLabel>
-            </ListboxOption>
+            {departmentList.map((item) => (
+              <ListboxOption
+                key={item.id}
+                value={item.id}
+              >
+                <ListboxLabel>{item.name}</ListboxLabel>
+              </ListboxOption>
+            ))}
           </Listbox>
         </Field>
         <Field>
-          <Label>Banner 圖片</Label>
-          <Input
-            name="banner"
-            type="file"
-            value={""}
-            onChange={handleFileChange}
-          />
+          <Label>表單類型</Label>
+          <Listbox
+            name="category_id"
+            value={form.category_id}
+            onChange={(val) => {
+              setForm({
+                ...form,
+                category_id: val
+              });
+            }}
+          >
+            {categoryList.map((item) => (
+              <ListboxOption
+                key={item.id}
+                value={item.id}
+              >
+                <ListboxLabel>{item.name}</ListboxLabel>
+              </ListboxOption>
+            ))}
+          </Listbox>
         </Field>
-        <div className="col-span-1">
+        <div className="col-span-1 row-span-3">
           <Editor
             textareaValue={textareaValue}
             setTextareaValue={setTextareaValue}
           />
         </div>
-        {imageUrl && (
-          <div className="col-span-2 flex justify-center items-center bg-gray-100">
-            <img
-              src={imageUrl}
-              alt="Uploaded"
-              className="w-1/2"
-            />
-          </div>
-        )}
+        <Field>
+          <Label>Banner 圖片</Label>
+          <Input
+            name="banner"
+            type="file"
+            onChange={handleFileChange}
+          />
+        </Field>
+        <Field>
+          <Label>Banner 預覽</Label>
+          {bannerImage && (
+            <div className="col-span-1 flex justify-center items-center bg-gray-100">
+              <img
+                src={bannerImage}
+                alt="Uploaded"
+                className="w-1/2"
+              />
+            </div>
+          )}
+        </Field>
+
+        <Field>
+          <Label>結束圖片</Label>
+          <Input
+            name="finish_photo"
+            type="file"
+            onChange={handleFileChange}
+          />
+        </Field>
+        <Field>
+          <Label>結束圖片 預覽</Label>
+          {finishImage && (
+            <div className="col-span-1 flex justify-center items-center bg-gray-100">
+              <img
+                src={finishImage}
+                alt="Uploaded"
+                className="w-1/2"
+              />
+            </div>
+          )}
+        </Field>
+
+        <Field>
+          <Label>結束訊息</Label>
+          <Input
+            name="finish_message"
+            value={form.finish_message}
+            onChange={(e) => {
+              setForm({
+                ...form,
+                finish_message: e.target.value
+              });
+            }}
+          />
+        </Field>
       </div>
       {/* 一組 */}
       {detail.map((item, index) => {

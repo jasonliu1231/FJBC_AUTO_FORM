@@ -20,9 +20,9 @@ export default async function UpdateAPI(req, res) {
     // }
 
     let sql = `
-      UPDATE form SET name=$1, banner=$2, content=$3, deadline=$4, auto_open=$5, auto_close=$6, department=$7 WHERE id =$8
+      UPDATE form SET name=$1, banner=$2, content=$3, deadline=$4, auto_open=$5, auto_close=$6, department_id=$7, category_id=$9, finish_photo=$10, finish_message=$11 WHERE id =$8
     `;
-    let params = [body.name, body.banner, body.content, body.deadline, body.auto_open, body.auto_close, body.department, body.id];
+    let params = [body.name, body.banner, body.content, body.deadline, body.auto_open, body.auto_close, body.department_id, body.id, body.category_id, body.finish_photo, body.finish_message];
     await pool.query(sql, params);
 
     for (let i = 0; i < body.detail.length; i++) {
@@ -36,11 +36,12 @@ export default async function UpdateAPI(req, res) {
         params = [body.id, i, body.detail[i].type, body.detail[i].required, body.detail[i].title, body.detail[i].enable];
         let detail = await pool.query(sql, params);
         for (let j = 0; j < body.detail[i].content.length; j++) {
+          const content = body.detail[i].content[j];
           sql = `
-          INSERT INTO detail_content(detail_id, index, content)
-          VALUES ($1, $2, $3) RETURNING id
+          INSERT INTO detail_content(detail_id, index, content, enable)
+          VALUES ($1, $2, $3, $4) RETURNING id
           `;
-          params = [detail.rows[0].id, j, body.detail[i].content[j]];
+          params = [detail.rows[0].id, j, content.content, content.enable];
           await pool.query(sql, params);
         }
       } else {
@@ -71,5 +72,8 @@ export default async function UpdateAPI(req, res) {
     await Detail(req, res);
   } catch (error) {
     console.error(error);
+    if (error.code == "23505") {
+      res.status(400).json({ msg: "欄位不可以空白" });
+    }
   }
 }

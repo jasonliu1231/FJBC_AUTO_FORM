@@ -1,6 +1,6 @@
 "use client";
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
+import { Button } from "@/components/button";
 import { useEffect, useState } from "react";
 import { Line, Bar, Pie } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, PointElement, LineElement, ArcElement } from "chart.js";
@@ -98,8 +98,14 @@ export default function Home({ form_id }) {
     const response = await fetch(`/api/return/pic?id=${form_id}`, config);
     const res = await response.json();
     if (response.ok) {
-      setReturnData(res);
-      console.log(res);
+      setReturnData(
+        res.map((item) => {
+          return {
+            ...item,
+            show: 1
+          };
+        })
+      );
     } else {
       alert("ERROR");
     }
@@ -123,55 +129,124 @@ export default function Home({ form_id }) {
   return (
     <div className="px-10 py-5">
       {returnData.map((item, index) => {
+        console.log(item);
         const backgroundColors = generateColors(item.content.length);
 
         return (
           <div key={index}>
-            <div className="text-2xl text-blue-600 mt-12">{item.title}</div>
-            <div className="grid grid-cols-3 gap-5 p-5 border-2">
-              <div className="w-full">
-                <Bar
-                  data={{
-                    labels: item.content,
-                    datasets: [
-                      {
-                        data: item.count,
-                        backgroundColor: backgroundColors
+            <div className="flex items-end m-3">
+              <div className="text-2xl text-blue-600 mt-12">{item.title}</div>
+              <Button
+                className="mx-2"
+                onClick={() => {
+                  setReturnData(
+                    returnData.map((i, idx) => {
+                      if (index == idx) {
+                        return {
+                          ...i,
+                          show: 1
+                        };
+                      } else {
+                        return i;
                       }
-                    ]
-                  }}
-                  options={barOptions}
-                />
-              </div>
-              <div className="w-full">
-                <Line
-                  data={{
-                    labels: item.content,
-                    datasets: [
-                      {
-                        data: item.count,
-                        borderColor: "blue"
-                        // backgroundColor: backgroundColors
+                    })
+                  );
+                }}
+              >
+                長條圖
+              </Button>
+              <Button
+                className="mx-2"
+                onClick={() => {
+                  setReturnData(
+                    returnData.map((i, idx) => {
+                      if (index == idx) {
+                        return {
+                          ...i,
+                          show: 2
+                        };
+                      } else {
+                        return i;
                       }
-                    ]
-                  }}
-                  options={lineOptions}
-                />
-              </div>
-              <div className="w-full">
-                <Pie
-                  data={{
-                    labels: item.content,
-                    datasets: [
-                      {
-                        data: item.count,
-                        backgroundColor: backgroundColors
+                    })
+                  );
+                }}
+              >
+                折線圖
+              </Button>
+              <Button
+                className="mx-2"
+                onClick={() => {
+                  setReturnData(
+                    returnData.map((i, idx) => {
+                      if (index == idx) {
+                        return {
+                          ...i,
+                          show: 3
+                        };
+                      } else {
+                        return i;
                       }
-                    ]
-                  }}
-                  options={pieOptions}
-                />
-              </div>
+                    })
+                  );
+                }}
+              >
+                圓餅圖
+              </Button>
+            </div>
+
+            <div className="p-20 border-2">
+              {item.show == 1 && (
+                <div className="w-1/2">
+                  <Bar
+                    data={{
+                      labels: item.content,
+                      datasets: [
+                        {
+                          data: item.count,
+                          backgroundColor: backgroundColors
+                        }
+                      ]
+                    }}
+                    options={barOptions}
+                  />
+                </div>
+              )}
+
+              {item.show == 2 && (
+                <div className="w-1/2">
+                  <Line
+                    data={{
+                      labels: item.content,
+                      datasets: [
+                        {
+                          data: item.count,
+                          borderColor: "blue"
+                          // backgroundColor: backgroundColors
+                        }
+                      ]
+                    }}
+                    options={lineOptions}
+                  />
+                </div>
+              )}
+
+              {item.show == 3 && (
+                <div className="w-1/2">
+                  <Pie
+                    data={{
+                      labels: item.content,
+                      datasets: [
+                        {
+                          data: item.count,
+                          backgroundColor: backgroundColors
+                        }
+                      ]
+                    }}
+                    options={pieOptions}
+                  />
+                </div>
+              )}
             </div>
           </div>
         );

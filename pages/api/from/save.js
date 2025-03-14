@@ -40,7 +40,9 @@ export default async function SaveAPI(req, res) {
       console.log(items);
       if (isEmpty) {
         if (items.type == "2") {
-          await saveCount(body.form_id, items.content_id);
+          if (items.content_id) {
+            await saveCount(body.form_id, items.content_id);
+          }
         } else if (items.type == "3") {
           const content_id = items.content_id;
           for (let j = 0; j < content_id.length; j++) {

@@ -20,6 +20,18 @@ export default function HeaderPage() {
               >
                 建立表單
               </a>
+              <a
+                href="/admin/department"
+                className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+              >
+                表單部門設定
+              </a>
+              <a
+                href="/admin/category"
+                className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+              >
+                表單類別設定
+              </a>
             </div>
           </div>
           <div className="ml-6 flex space-x-8">
