@@ -204,17 +204,18 @@ export default function Home() {
           {detail.map((items) => (
             <div
               key={items.id}
-              className={`my-5 rounded-xl ${items.error ? "bg-red-200" : "bg-blue-200"}`}
+              className={`my-5 rounded-xl ${items.error ? "bg-red-200" : "bg-gray-200"}`}
             >
               {items.title != "" && items.enable && (
-                <div className="p-10">
+                <div className="p-5">
                   {items.type == "1" ? (
                     <Field>
-                      <Label>
-                        {items.title}
-                        <span className="text-red-500">{items.required ? "(必填)" : ""}</span>
+                      <Label className="text-2xl">
+                        <span className="text-lg">{items.title}</span>
+                        <span className="text-red-500 m-2">{items.required ? "(必填)" : ""}</span>
                       </Label>
                       <Input
+                        className="border-1 border-gray-300 bg-gray-100 rounded-md"
                         name={items.title}
                         onChange={(e) => {
                           setData({
@@ -231,8 +232,8 @@ export default function Home() {
                   ) : items.type == "2" ? (
                     <Fieldset>
                       <Legend>
-                        {items.title}
-                        <span className="text-red-500">{items.required ? "(必填)" : ""}</span>
+                        <span className="text-lg">{items.title}</span>
+                        <span className="text-red-500 m-0">{items.required ? "(必填)" : ""}</span>
                       </Legend>
                       <RadioGroup
                         name={items.id}
@@ -264,8 +265,8 @@ export default function Home() {
                   ) : items.type == "3" ? (
                     <Fieldset>
                       <Legend>
-                        {items.title}
-                        <span className="text-red-500">{items.required ? "(必填)" : ""}</span>
+                        <span className="text-lg">{items.title}</span>
+                        <span className="text-red-500 mx-2">{items.required ? "(必填)" : ""}</span>
                       </Legend>
                       <CheckboxGroup>
                         {items.content.map((item, index) => (
@@ -306,8 +307,8 @@ export default function Home() {
                   ) : items.type == "4" ? (
                     <Field>
                       <Label>
-                        {items.title}
-                        <span className="text-red-500">{items.required ? "(必填)" : ""}</span>
+                        <span className="text-lg">{items.title}</span>
+                        <span className="text-red-500 mx-2">{items.required ? "(必填)" : ""}</span>
                       </Label>
                       <Input
                         type="datetime-local"

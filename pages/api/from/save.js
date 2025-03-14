@@ -5,14 +5,18 @@ export default async function SaveAPI(req, res) {
   try {
     await pool.query("BEGIN");
 
-    let sql = `SELECT id FROM form WHERE id=$1 AND CURRENT_TIMESTAMP < deadline`;
+    let sql = `SELECT deadline FROM form WHERE id=$1`;
     let params = [body.form_id];
     let result = await pool.query(sql, params);
 
-    if (result.rows.length == 0) {
-      res.status(400).json({
-        msg: "感謝您的支持，非常抱歉活動已結束！"
-      });
+    console.log(result.rows[0]?.deadline);
+
+    if (result.rows[0]?.deadline) {
+      if (new Date(deadline) < new Date()) {
+        res.status(400).json({
+          msg: "感謝您的支持，非常抱歉活動已結束！"
+        });
+      }
     }
 
     sql = `
@@ -37,7 +41,7 @@ export default async function SaveAPI(req, res) {
     for (let i = 0; i < 19; i++) {
       const items = body[`items${i}`];
       const isEmpty = items === undefined ? false : true;
-      console.log(items);
+
       if (isEmpty) {
         if (items.type == "2") {
           if (items.content_id) {
