@@ -17,22 +17,19 @@ export default function Home() {
   async function checkFrom() {
     let check = true;
     detail.forEach((item) => {
-      if (item.required) {
+      if (item.required && item.enable) {
         if (item.type == "1") {
           if (data[`items${item.index}`].content_value == "") {
-            alert(`${item.title}，是必填欄位！請幫忙填寫再送出～感謝！`);
             check = false;
             return;
           }
         } else if (item.type == "2") {
           if (data[`items${item.index}`].content_id == "") {
-            alert(`${item.title}，是必填欄位！請幫忙填寫再送出～感謝！`);
             check = false;
             return;
           }
         } else if (item.type == "3") {
           if (data[`items${item.index}`].content_id.length == 0) {
-            alert(`${item.title}，是必填欄位！請幫忙填寫再送出～感謝！`);
             check = false;
             return;
           }
@@ -40,6 +37,7 @@ export default function Home() {
       }
     });
     if (check) {
+      alert(`必填欄位！請幫忙填寫再送出～感謝！`);
       saveFrom();
     }
   }
@@ -122,7 +120,7 @@ export default function Home() {
   }
 
   return (
-    <div className="max-w-md sm:max-w-xl mx-auto">
+    <div className="max-w-md sm:max-w-xl mx-auto bg-gray-100">
       <div className="">
         {form?.banner && (
           <div className="flex justify-center items-center">
@@ -141,108 +139,147 @@ export default function Home() {
         />
       </div>
 
-      <div className="px-5">
-        {form.deadline && <div className="text-center text-red-400">活動期限：{new Date(form.deadline).toLocaleString()}</div>}
+      <div className="p-2">
+        <div className="p-3">
+          {form.deadline && <div className="text-center text-red-400">活動期限：{new Date(form.deadline).toLocaleString()}</div>}
 
-        {detail.map((items) => (
-          <div key={items.id}>
-            {items.title != "" && (
-              <div className="p-5">
-                {items.type == "1" ? (
-                  <Field>
-                    <Label>
-                      {items.title}
-                      <span className="text-red-500">{items.required ? "(必填)" : ""}</span>
-                    </Label>
-                    <Input
-                      name={items.title}
-                      onChange={(e) => {
-                        setData({
-                          ...data,
-                          [`items${items.index}`]: {
-                            ...data[`items${items.index}`],
-                            content_id: null,
-                            content_value: e.target.value
-                          }
-                        });
-                      }}
-                    />
-                  </Field>
-                ) : items.type == "2" ? (
-                  <Fieldset>
-                    <Legend>
-                      {items.title}
-                      <span className="text-red-500">{items.required ? "(必填)" : ""}</span>
-                    </Legend>
-                    <RadioGroup
-                      name={items.id}
-                      defaultValue="1"
-                      onChange={(val) => {
-                        const item_val = val.split("@$");
-                        setData({
-                          ...data,
-                          [`items${items.index}`]: {
-                            ...data[`items${items.index}`],
-                            content_id: item_val[0],
-                            content_value: item_val[1]
-                          }
-                        });
-                      }}
-                    >
-                      {items.content.map((item, index) => (
-                        <RadioField key={index}>
-                          <Radio value={`${item.id}@$${item.content}`} />
-                          <Label>{item.content}</Label>
-                        </RadioField>
-                      ))}
-                    </RadioGroup>
-                  </Fieldset>
-                ) : items.type == "3" ? (
-                  <Fieldset>
-                    <Legend>
-                      {items.title}
-                      <span className="text-red-500">{items.required ? "(必填)" : ""}</span>
-                    </Legend>
-                    <CheckboxGroup>
-                      {items.content.map((item, index) => (
-                        <CheckboxField key={index}>
-                          <Checkbox
-                            name={items.id}
-                            onChange={(checked) => {
-                              if (checked) {
-                                setData({
-                                  ...data,
-                                  [`items${items.index}`]: {
-                                    ...data[`items${items.index}`],
-                                    content_id: [...data[`items${items.index}`].content_id, item.id],
-                                    content_value: [...data[`items${items.index}`].content_value, item.content]
-                                  }
-                                });
-                              } else {
-                                setData({
-                                  ...data,
-                                  [`items${items.index}`]: {
-                                    ...data[`items${items.index}`],
-                                    content_id: data[`items${items.index}`].content_id.filter((i) => i != item.id),
-                                    content_value: data[`items${items.index}`].content_value.filter((i) => i != item.content)
-                                  }
-                                });
-                              }
-                            }}
-                          />
-                          <Label>{item.content}</Label>
-                        </CheckboxField>
-                      ))}
-                    </CheckboxGroup>
-                  </Fieldset>
-                ) : null}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-      <div className="flex justify-center my-5">
-        <Button onClick={checkFrom}>Save</Button>
+          {detail.map((items) => (
+            <div
+              key={items.id}
+              className="my-5 bg-blue-200 rounded-xl"
+            >
+              {items.title != "" && items.enable && (
+                <div className="p-10">
+                  {items.type == "1" ? (
+                    <Field>
+                      <Label>
+                        {items.title}
+                        <span className="text-red-500">{items.required ? "(必填)" : ""}</span>
+                      </Label>
+                      <Input
+                        name={items.title}
+                        onChange={(e) => {
+                          setData({
+                            ...data,
+                            [`items${items.index}`]: {
+                              ...data[`items${items.index}`],
+                              content_id: null,
+                              content_value: e.target.value
+                            }
+                          });
+                        }}
+                      />
+                    </Field>
+                  ) : items.type == "2" ? (
+                    <Fieldset>
+                      <Legend>
+                        {items.title}
+                        <span className="text-red-500">{items.required ? "(必填)" : ""}</span>
+                      </Legend>
+                      <RadioGroup
+                        name={items.id}
+                        defaultValue="1"
+                        onChange={(val) => {
+                          const item_val = val.split("@$");
+                          setData({
+                            ...data,
+                            [`items${items.index}`]: {
+                              ...data[`items${items.index}`],
+                              content_id: item_val[0],
+                              content_value: item_val[1]
+                            }
+                          });
+                        }}
+                      >
+                        {items.content.map((item, index) => (
+                          <>
+                            {item.enable && (
+                              <RadioField key={index}>
+                                <Radio value={`${item.id}@$${item.content}`} />
+                                <Label>{item.content}</Label>
+                              </RadioField>
+                            )}
+                          </>
+                        ))}
+                      </RadioGroup>
+                    </Fieldset>
+                  ) : items.type == "3" ? (
+                    <Fieldset>
+                      <Legend>
+                        {items.title}
+                        <span className="text-red-500">{items.required ? "(必填)" : ""}</span>
+                      </Legend>
+                      <CheckboxGroup>
+                        {items.content.map((item, index) => (
+                          <>
+                            {item.enable && (
+                              <CheckboxField key={index}>
+                                <Checkbox
+                                  name={items.id}
+                                  onChange={(checked) => {
+                                    if (checked) {
+                                      setData({
+                                        ...data,
+                                        [`items${items.index}`]: {
+                                          ...data[`items${items.index}`],
+                                          content_id: [...data[`items${items.index}`].content_id, item.id],
+                                          content_value: [...data[`items${items.index}`].content_value, item.content]
+                                        }
+                                      });
+                                    } else {
+                                      setData({
+                                        ...data,
+                                        [`items${items.index}`]: {
+                                          ...data[`items${items.index}`],
+                                          content_id: data[`items${items.index}`].content_id.filter((i) => i != item.id),
+                                          content_value: data[`items${items.index}`].content_value.filter((i) => i != item.content)
+                                        }
+                                      });
+                                    }
+                                  }}
+                                />
+                                <Label>{item.content}</Label>
+                              </CheckboxField>
+                            )}
+                          </>
+                        ))}
+                      </CheckboxGroup>
+                    </Fieldset>
+                  ) : items.type == "4" ? (
+                    <Field>
+                      <Label>
+                        {items.title}
+                        <span className="text-red-500">{items.required ? "(必填)" : ""}</span>
+                      </Label>
+                      <Input
+                        type="datetime-local"
+                        name={items.title}
+                        onChange={(e) => {
+                          setData({
+                            ...data,
+                            [`items${items.index}`]: {
+                              ...data[`items${items.index}`],
+                              content_id: null,
+                              content_value: e.target.value
+                            }
+                          });
+                        }}
+                      />
+                    </Field>
+                  ) : null}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-center my-5">
+          <Button
+            color="green"
+            onClick={checkFrom}
+          >
+            Save
+          </Button>
+        </div>
       </div>
     </div>
   );

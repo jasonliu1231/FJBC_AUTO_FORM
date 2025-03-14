@@ -5,14 +5,27 @@ export default async function DetailAPI(req, res) {
   try {
     let sql = `
         WITH detail_content AS (
-            SELECT detail_id, ARRAY_AGG(content) content FROM detail_content 
-            GROUP BY detail_id
+          SELECT 
+            detail_id, 
+            COALESCE(
+            JSON_AGG(
+              JSON_BUILD_OBJECT(
+                'enable', detail_content.enable,
+                'content_id', COALESCE(detail_content.id, null),
+                'content', COALESCE(detail_content.content, null)
+              ) ORDER BY detail_content.index
+            ),
+            '[]'::json
+            ) AS content
+          FROM detail_content 
+          GROUP BY detail_id
         )
 
         SELECT 
-          id, form_id, index, type, required, title, enable, COALESCE(content, ARRAY[]::text[]) AS content
+          id, form_id, index, type, required, title, enable, 
+          COALESCE(detail_content.content, '[]'::json) AS content
         FROM form_detail
-        LEFT JOIN detail_content ON detail_id = form_detail.id
+        LEFT JOIN detail_content ON detail_content.detail_id = form_detail.id
         WHERE form_detail.form_id = $1
         ORDER BY form_detail.index
     `;

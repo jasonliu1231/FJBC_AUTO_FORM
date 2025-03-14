@@ -10,23 +10,24 @@ export default async function DetailAPI(req, res) {
     }
     sql = `
         WITH detail_content AS (
-          SELECT id, detail_id, content FROM detail_content
+          SELECT id, detail_id, content, enable FROM detail_content
         )
 
         SELECT 
-          form_detail.id, form_id, index, type, required, title, enable, 
+          form_detail.id, form_id, index, type, required, title, form_detail.enable, 
           JSON_AGG(
             JSON_BUILD_OBJECT(
               'id', detail_content.id,
+              'enable', detail_content.enable,
               'detail_id', detail_content.id,
               'content', detail_content.content
             )
           )
           content 
         FROM form_detail
-        LEFT JOIN detail_content ON detail_id = form_detail.id
+        LEFT JOIN detail_content ON detail_content.detail_id = form_detail.id
         WHERE form_detail.form_id = $1
-        GROUP BY form_detail.id, form_id, index, type, required, title, enable
+        GROUP BY form_detail.id, form_id, index, type, required, title, form_detail.enable
         ORDER BY form_detail.index
     `;
     let detail = await pool.query(sql, [id]);

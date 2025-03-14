@@ -115,7 +115,7 @@ export default function Home({ form_id }) {
   const generateColors = (num) => {
     const colors = [];
     for (let i = 0; i < num; i++) {
-      colors.push(`hsl(${Math.random() * 360}, 100%, 50%)`); // 隨機顏色
+      colors.push(`hsl(${Math.random() * 100}, 100%, 50%)`); // 隨機顏色
     }
     return colors;
   };

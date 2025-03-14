@@ -6,28 +6,28 @@ export default async function UpdateAPI(req, res) {
 
   try {
     await pool.query("BEGIN");
+    // let sql = `
+    //     SELECT id FROM form_return_list WHERE form_id = $1
+    // `;
+    // let params = [body.id];
+    // let result = await pool.query(sql, params);
+
+    // if (result.rows.length > 0) {
+    //   res.status(400).json({
+    //     msg: "表單已有人填寫，無法修改！"
+    //   });
+    //   return;
+    // }
+
     let sql = `
-        SELECT id FROM form_return_list WHERE form_id = $1
-    `;
-    let params = [body.id];
-    let result = await pool.query(sql, params);
-
-    if (result.rows.length > 0) {
-      res.status(400).json({
-        msg: "表單已有人填寫，無法修改！"
-      });
-      return;
-    }
-
-    sql = `
       UPDATE form SET name=$1, banner=$2, content=$3, deadline=$4, auto_open=$5, auto_close=$6, department=$7 WHERE id =$8
     `;
-    params = [body.name, body.banner, body.content, body.deadline, body.auto_open, body.auto_close, body.department, body.id];
+    let params = [body.name, body.banner, body.content, body.deadline, body.auto_open, body.auto_close, body.department, body.id];
     await pool.query(sql, params);
 
     for (let i = 0; i < body.detail.length; i++) {
       sql = `SELECT * FROM form_detail WHERE id = $1`;
-      result = await pool.query(sql, [body.detail[i].id]);
+      let result = await pool.query(sql, [body.detail[i].id]);
       if (result.rows.length == 0) {
         sql = `
         INSERT INTO form_detail(form_id, index, type, required, title, enable)
@@ -49,12 +49,21 @@ export default async function UpdateAPI(req, res) {
         `;
         params = [body.detail[i].type, body.detail[i].required, body.detail[i].title, body.detail[i].enable, body.detail[i].id];
         await pool.query(sql, params);
-        sql = `DELETE FROM detail_content WHERE detail_id=$1`;
-        await pool.query(sql, [body.detail[i].id]);
+        console.log(body.detail[i].content);
         for (let j = 0; j < body.detail[i].content.length; j++) {
-          sql = `INSERT INTO detail_content(detail_id, index, content) VALUES ($1, $2, $3)`;
-          params = [body.detail[i].id, j, body.detail[i].content[j]];
-          await pool.query(sql, params);
+          const content = body.detail[i].content[j];
+          sql = `SELECT id FROM detail_content WHERE id=$1 AND detail_id=$2`;
+          params = [content.content_id, body.detail[i].id];
+          result = await pool.query(sql, params);
+          if (result.rows.length == 0) {
+            if (content.enable) sql = `INSERT INTO detail_content(detail_id, index, content, enable) VALUES ($1, $2, $3, $4)`;
+            params = [body.detail[i].id, j, content.content, content.enable];
+            await pool.query(sql, params);
+          } else {
+            sql = `UPDATE detail_content SET content=$1, enable=$4 WHERE id=$2 AND detail_id=$3`;
+            params = [content.content, content.content_id, body.detail[i].id, content.enable];
+            await pool.query(sql, params);
+          }
         }
       }
     }

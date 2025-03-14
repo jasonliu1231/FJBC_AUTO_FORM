@@ -4,6 +4,7 @@ import { Field, Label, Description, Fieldset, Legend } from "@/components/fields
 import { Input } from "@/components/input";
 import { Listbox, ListboxLabel, ListboxOption } from "@/components/listbox";
 import { Radio, RadioField, RadioGroup } from "@/components/radio";
+import { Switch } from "@/components/switch";
 import { Text } from "@/components/text";
 import { Button } from "@/components/button";
 import { useEffect, useLayoutEffect, useState } from "react";
@@ -14,7 +15,7 @@ const item_def = {
   type: "1",
   required: true,
   title: "",
-  content: [""]
+  content: [{}]
 };
 
 function changeDate(data) {
@@ -91,19 +92,14 @@ export default function Home() {
         ...form,
         banner: imageUrl,
         content: textareaValue,
-        detail: detail.map((item) => {
-          return {
-            ...item,
-            content: item.content.filter((item) => item != "")
-          };
-        })
+        detail: detail
       })
     };
 
     const response = await fetch("/api/from/update", config);
     const res = await response.json();
     if (response.ok) {
-      alert("FINISH");
+      alert("修改完成！");
     } else {
       alert(res.msg);
     }
@@ -340,6 +336,10 @@ export default function Home() {
                     <Radio value="3" />
                     <Label>多選</Label>
                   </RadioField>
+                  <RadioField>
+                    <Radio value="4" />
+                    <Label>行事曆</Label>
+                  </RadioField>
                 </RadioGroup>
               </Fieldset>
               <Field className="col-span-2">
@@ -366,9 +366,12 @@ export default function Home() {
               <Field className="col-span-2">
                 <Label>內容</Label>
                 {item.content?.map((content, content_index) => (
-                  <div key={content_index}>
+                  <div
+                    key={content_index}
+                    className="flex items-center"
+                  >
                     <Input
-                      value={content}
+                      value={content.content}
                       onChange={(e) => {
                         setDetail(
                           detail.map((i, idx) => {
@@ -377,7 +380,36 @@ export default function Home() {
                                 ...i,
                                 content: i.content.map((ii, iidx) => {
                                   if (content_index == iidx) {
-                                    return e.target.value;
+                                    return {
+                                      ...ii,
+                                      content: e.target.value
+                                    };
+                                  } else {
+                                    return ii;
+                                  }
+                                })
+                              };
+                            } else {
+                              return i;
+                            }
+                          })
+                        );
+                      }}
+                    />
+                    <Switch
+                      checked={content.enable}
+                      onChange={(val) => {
+                        setDetail(
+                          detail.map((i, idx) => {
+                            if (idx == index) {
+                              return {
+                                ...i,
+                                content: i.content.map((ii, iidx) => {
+                                  if (content_index == iidx) {
+                                    return {
+                                      ...ii,
+                                      enable: val
+                                    };
                                   } else {
                                     return ii;
                                   }
@@ -400,7 +432,7 @@ export default function Home() {
                           if (idx == index) {
                             return {
                               ...i,
-                              content: [...item.content, ""]
+                              content: [...item.content, { content: "", enable: true }]
                             };
                           } else {
                             return i;
