@@ -69,7 +69,7 @@ export default async function UpdateAPI(req, res) {
       }
     }
     await pool.query("COMMIT");
-    await Detail(req, res);
+    await res.status(200).json({});
   } catch (error) {
     console.error(error);
     if (error.code == "23505") {

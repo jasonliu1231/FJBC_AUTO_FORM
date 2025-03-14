@@ -7,7 +7,7 @@ import { Radio, RadioField, RadioGroup } from "@/components/radio";
 import { Switch } from "@/components/switch";
 import { Text } from "@/components/text";
 import { Button } from "@/components/button";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Editor from "../Editor";
 
 const item_def = {
@@ -15,7 +15,7 @@ const item_def = {
   type: "1",
   required: true,
   title: "",
-  content: [{ enable: true }]
+  content: [{ enable: true, content: [] }]
 };
 
 function changeDate(data) {
@@ -39,6 +39,7 @@ function changeDateTime(data) {
 }
 
 export default function Home() {
+  const form_id = useRef();
   const [form, setForm] = useState({
     id: "",
     name: "",
@@ -105,6 +106,7 @@ export default function Home() {
     const response = await fetch("/api/from/update", config);
     const res = await response.json();
     if (response.ok) {
+      getFrom(form_id.current);
       alert("修改完成！");
     } else {
       alert(res.msg);
@@ -170,6 +172,7 @@ export default function Home() {
     const queryString = window.location.search;
     const params = new URLSearchParams(queryString);
     const id = params.get("id");
+    form_id.current = id;
     getFrom(id);
     getCategoryList();
     getDepartmentList();
