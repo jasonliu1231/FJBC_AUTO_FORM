@@ -6,6 +6,7 @@ import { Radio, RadioField, RadioGroup } from "@/components/radio";
 import { Checkbox, CheckboxField, CheckboxGroup } from "@/components/checkbox";
 import { Dialog, DialogActions, DialogBody, DialogDescription, DialogTitle } from "@/components/dialog";
 import { Input } from "@/components/input";
+import { Textarea } from "@/components/textarea";
 import { Text } from "@/components/text";
 import { Button } from "@/components/button";
 
@@ -14,6 +15,7 @@ export default function Home() {
   const [form, setForm] = useState();
   const [detail, setDetail] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [close, setClose] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   async function checkFrom() {
@@ -134,10 +136,9 @@ export default function Home() {
       }, {});
 
       setData({ form_id: id, ...object });
-
       setLoading(false);
     } else {
-      alert(res.msg);
+      setClose(true);
     }
   }
 
@@ -149,7 +150,20 @@ export default function Home() {
   }, []);
 
   if (loading) {
-    return null;
+    return (
+      <div className="max-w-md sm:max-w-xl mx-auto bg-gray-100">
+        <Dialog
+          open={close}
+          onClose={setClose}
+          size="sm"
+          className="absolute rounded-3xl top-100"
+        >
+          <DialogTitle className="text-center">
+            <span className="text-red-600 text-xl">活動已關閉</span>
+          </DialogTitle>
+        </Dialog>
+      </div>
+    );
   }
 
   return (
@@ -157,6 +171,7 @@ export default function Home() {
       <Dialog
         open={isOpen}
         onClose={setIsOpen}
+        size="3xl"
       >
         <DialogTitle className="text-center">{form.finish_message}</DialogTitle>
         <DialogBody>
@@ -165,19 +180,19 @@ export default function Home() {
               <img
                 src={form.finish_photo}
                 alt="Uploaded"
-                className="w-1/2"
+                className="w-full"
               />
             </div>
           )}
         </DialogBody>
-        <DialogActions>
+        <div className="flex justify-center">
           <Button
             plain
             onClick={() => setIsOpen(false)}
           >
             關閉
           </Button>
-        </DialogActions>
+        </div>
       </Dialog>
       <div className="">
         {form?.banner && (
@@ -320,6 +335,27 @@ export default function Home() {
                               ...data[`items${items.index}`],
                               content_id: null,
                               content_value: new Date(e.target.value).toLocaleString()
+                            }
+                          });
+                        }}
+                      />
+                    </Field>
+                  ) : items.type == "5" ? (
+                    <Field>
+                      <Label>
+                        <span className="text-lg">{items.title}</span>
+                        <span className="text-red-500 mx-2">{items.required ? "(必填)" : ""}</span>
+                      </Label>
+                      <Textarea
+                        type="datetime-local"
+                        name={items.title}
+                        onChange={(e) => {
+                          setData({
+                            ...data,
+                            [`items${items.index}`]: {
+                              ...data[`items${items.index}`],
+                              content_id: null,
+                              content_value: e.target.value
                             }
                           });
                         }}

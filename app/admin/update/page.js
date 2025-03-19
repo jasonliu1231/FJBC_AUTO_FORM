@@ -88,7 +88,13 @@ export default function Home() {
   }
 
   async function updateFrom() {
-    console.log();
+    const seen = new Set();
+    const hasDuplicate = detail.some((item) => (seen.has(item.index) ? true : (seen.add(item.index), false)));
+    if (hasDuplicate) {
+      alert("欄位序號重複");
+      return;
+    }
+
     const config = {
       method: "POST",
       headers: {
@@ -106,8 +112,8 @@ export default function Home() {
     const response = await fetch("/api/from/update", config);
     const res = await response.json();
     if (response.ok) {
-      getFrom(form_id.current);
       alert("修改完成！");
+      window.location.href = "/admin/list";
     } else {
       alert(res.msg);
     }
@@ -182,7 +188,9 @@ export default function Home() {
     <div className="p-10">
       <div className="grid grid-cols-3 gap-5 p-10 border">
         <Field>
-          <Label>表單名稱</Label>
+          <Label>
+            表單名稱<span className="text-red-600">(必填欄位)</span>
+          </Label>
           <Input
             name="name"
             value={form.name}
@@ -350,6 +358,28 @@ export default function Home() {
             className="border-b-1 p-5"
           >
             <div className="grid grid-cols-8 gap-5">
+              <Field>
+                <Label>欄位序號</Label>
+                <Input
+                  name="name"
+                  type="number"
+                  value={item.index}
+                  onChange={(e) => {
+                    setDetail(
+                      detail.map((i, idx) => {
+                        if (idx == index) {
+                          return {
+                            ...i,
+                            index: Number(e.target.value)
+                          };
+                        } else {
+                          return i;
+                        }
+                      })
+                    );
+                  }}
+                />
+              </Field>
               <Fieldset>
                 <Legend>啟用</Legend>
                 <RadioGroup
@@ -371,11 +401,17 @@ export default function Home() {
                   }}
                 >
                   <RadioField>
-                    <Radio value={true} />
+                    <Radio
+                      color="cyan"
+                      value={true}
+                    />
                     <Label>開啟</Label>
                   </RadioField>
                   <RadioField>
-                    <Radio value={false} />
+                    <Radio
+                      color="cyan"
+                      value={false}
+                    />
                     <Label>關閉</Label>
                   </RadioField>
                 </RadioGroup>
@@ -401,11 +437,17 @@ export default function Home() {
                   }}
                 >
                   <RadioField>
-                    <Radio value={true} />
+                    <Radio
+                      color="blue"
+                      value={true}
+                    />
                     <Label>是</Label>
                   </RadioField>
                   <RadioField>
-                    <Radio value={false} />
+                    <Radio
+                      color="blue"
+                      value={false}
+                    />
                     <Label>否</Label>
                   </RadioField>
                 </RadioGroup>
@@ -431,25 +473,46 @@ export default function Home() {
                   }}
                 >
                   <RadioField>
-                    <Radio value="1" />
+                    <Radio
+                      color="sky"
+                      value="1"
+                    />
                     <Label>輸入</Label>
                   </RadioField>
                   <RadioField>
-                    <Radio value="2" />
+                    <Radio
+                      color="sky"
+                      value="2"
+                    />
                     <Label>單選</Label>
                   </RadioField>
                   <RadioField>
-                    <Radio value="3" />
+                    <Radio
+                      color="sky"
+                      value="3"
+                    />
                     <Label>多選</Label>
                   </RadioField>
                   <RadioField>
-                    <Radio value="4" />
+                    <Radio
+                      color="sky"
+                      value="4"
+                    />
                     <Label>行事曆</Label>
+                  </RadioField>
+                  <RadioField>
+                    <Radio
+                      color="sky"
+                      value="5"
+                    />
+                    <Label>備注</Label>
                   </RadioField>
                 </RadioGroup>
               </Fieldset>
               <Field className="col-span-2">
-                <Label>欄位名稱</Label>
+                <Label>
+                  欄位名稱<span className="text-red-600">(必填欄位)</span>
+                </Label>
                 <Input
                   name={`title` + index}
                   value={item.title}
@@ -469,31 +532,80 @@ export default function Home() {
                   }}
                 />
               </Field>
-              <Field className="col-span-2">
-                <Label>內容</Label>
-                {item.content?.map((content, content_index) => (
-                  <div
-                    key={content_index}
-                    className="flex items-center"
-                  >
-                    <Input
-                      value={content.content}
-                      onChange={(e) => {
+              {(item.type == 2 || item.type == 3) && (
+                <Field className="col-span-2">
+                  <Label>內容</Label>
+                  {item.content?.map((content, content_index) => (
+                    <div
+                      key={content_index}
+                      className="flex items-center"
+                    >
+                      <Input
+                        value={content.content}
+                        onChange={(e) => {
+                          setDetail(
+                            detail.map((i, idx) => {
+                              if (idx == index) {
+                                return {
+                                  ...i,
+                                  content: i.content.map((ii, iidx) => {
+                                    if (content_index == iidx) {
+                                      return {
+                                        ...ii,
+                                        content: e.target.value
+                                      };
+                                    } else {
+                                      return ii;
+                                    }
+                                  })
+                                };
+                              } else {
+                                return i;
+                              }
+                            })
+                          );
+                        }}
+                      />
+                      <Switch
+                        className="mx-2"
+                        color="green"
+                        checked={content.enable}
+                        onChange={(val) => {
+                          setDetail(
+                            detail.map((i, idx) => {
+                              if (idx == index) {
+                                return {
+                                  ...i,
+                                  content: i.content.map((ii, iidx) => {
+                                    if (content_index == iidx) {
+                                      return {
+                                        ...ii,
+                                        enable: val
+                                      };
+                                    } else {
+                                      return ii;
+                                    }
+                                  })
+                                };
+                              } else {
+                                return i;
+                              }
+                            })
+                          );
+                        }}
+                      />
+                    </div>
+                  ))}
+                  <div className="p-2 flex justify-center">
+                    <Button
+                      color="teal"
+                      onClick={() => {
                         setDetail(
                           detail.map((i, idx) => {
                             if (idx == index) {
                               return {
                                 ...i,
-                                content: i.content.map((ii, iidx) => {
-                                  if (content_index == iidx) {
-                                    return {
-                                      ...ii,
-                                      content: e.target.value
-                                    };
-                                  } else {
-                                    return ii;
-                                  }
-                                })
+                                content: [...item.content, { content: "", enable: true }]
                               };
                             } else {
                               return i;
@@ -501,71 +613,33 @@ export default function Home() {
                           })
                         );
                       }}
-                    />
-                    <Switch
-                      checked={content.enable}
-                      onChange={(val) => {
-                        setDetail(
-                          detail.map((i, idx) => {
-                            if (idx == index) {
-                              return {
-                                ...i,
-                                content: i.content.map((ii, iidx) => {
-                                  if (content_index == iidx) {
-                                    return {
-                                      ...ii,
-                                      enable: val
-                                    };
-                                  } else {
-                                    return ii;
-                                  }
-                                })
-                              };
-                            } else {
-                              return i;
-                            }
-                          })
-                        );
-                      }}
-                    />
+                    >
+                      新增
+                    </Button>
                   </div>
-                ))}
-                <div className="p-2 flex justify-center">
-                  <Button
-                    onClick={() => {
-                      setDetail(
-                        detail.map((i, idx) => {
-                          if (idx == index) {
-                            return {
-                              ...i,
-                              content: [...item.content, { content: "", enable: true }]
-                            };
-                          } else {
-                            return i;
-                          }
-                        })
-                      );
-                    }}
-                  >
-                    新增
-                  </Button>
-                </div>
-              </Field>
+                </Field>
+              )}
             </div>
           </div>
         );
       })}
       <div className="flex justify-between p-5">
         <Button
+          color="blue"
           onClick={() => {
             if (detail.length < 20) {
-              setDetail([...detail, item_def]);
+              setDetail([...detail, { ...item_def, index: detail.length }]);
             }
           }}
         >
           新增客製化框
         </Button>
-        <Button onClick={updateFrom}>更新</Button>
+        <Button
+          color="green"
+          onClick={updateFrom}
+        >
+          更新
+        </Button>
       </div>
     </div>
   );

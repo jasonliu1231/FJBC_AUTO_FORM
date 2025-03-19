@@ -19,6 +19,7 @@ export default function Home() {
   return (
     <div className="px-10 py-5">
       <Button
+        color="violet"
         className="mx-1"
         onClick={() => {
           setIsList(true);
@@ -27,6 +28,7 @@ export default function Home() {
         統計表
       </Button>
       <Button
+        color="purple"
         className="mx-1"
         onClick={() => {
           setIsList(false);

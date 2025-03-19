@@ -9,10 +9,8 @@ export default async function SaveAPI(req, res) {
     let params = [body.form_id];
     let result = await pool.query(sql, params);
 
-    console.log(result.rows[0]?.deadline);
-
     if (result.rows[0]?.deadline) {
-      if (new Date(deadline) < new Date()) {
+      if (new Date(result.rows[0]?.deadline) < new Date()) {
         res.status(400).json({
           msg: "感謝您的支持，非常抱歉活動已結束！"
         });

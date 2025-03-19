@@ -3,7 +3,7 @@ import pool from "../../../sql_conn/activity";
 export default async function GetListAPI(req, res) {
   const id = req.query.id;
   try {
-    let sql = `SELECT title FROM form_detail WHERE form_id=$1 ORDER BY index`;
+    let sql = `SELECT title, enable FROM form_detail WHERE form_id=$1 ORDER BY index`;
     let params = [id];
     let title = await pool.query(sql, params);
 
@@ -18,7 +18,7 @@ export default async function GetListAPI(req, res) {
 
     let title_list = [];
     title.rows.forEach((item) => {
-      title_list.push(item.title);
+      title_list.push({ title: item.title, enable: item.enable });
     });
 
     res.status(200).json({

@@ -75,7 +75,7 @@ export default function Home() {
 
       <Table>
         <TableHead>
-          <TableRow>
+          <TableRow className="bg-green-50">
             <TableHeader>名稱</TableHeader>
             <TableHeader>期限</TableHeader>
             <TableHeader>自動開啟</TableHeader>
@@ -88,16 +88,20 @@ export default function Home() {
         </TableHead>
         <TableBody>
           {formList.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell>{item.name}</TableCell>
+            <TableRow
+              key={item.id}
+              className="hover:bg-blue-50"
+            >
+              <TableCell className="font-bold">{item.name}</TableCell>
               <TableCell>{item.deadline && new Date(item.deadline).toLocaleString()}</TableCell>
               <TableCell>{item.auto_open && new Date(item.auto_open).toLocaleDateString()}</TableCell>
               <TableCell>{item.auto_close && new Date(item.auto_close).toLocaleDateString()}</TableCell>
               <TableCell>{item.department}</TableCell>
               <TableCell>{item.category}</TableCell>
-              <TableCell>{item.enable ? "開啟中" : "關閉中"}</TableCell>
+              <TableCell className={`${item.enable ? "text-green-500" : "text-red-500"}`}>{item.enable ? "開啟中" : "關閉中"}</TableCell>
               <TableCell>
                 <Button
+                  color={item.enable ? "red" : "green"}
                   className="mx-1"
                   onClick={() => {
                     setFrom(item.id, !item.enable);
@@ -106,14 +110,16 @@ export default function Home() {
                   {item.enable ? "關閉" : "啟用"}
                 </Button>
                 <Button
+                  color="blue"
                   className="mx-1"
                   onClick={() => {
-                    window.location.href = `/?id=${item.id}`;
+                    window.open(`/?id=${item.id}`, "_blank");
                   }}
                 >
-                  表單
+                  表單頁
                 </Button>
                 <Button
+                  color="blue"
                   className="mx-1"
                   type="button"
                   onClick={() => {
@@ -124,6 +130,7 @@ export default function Home() {
                   QRCode
                 </Button>
                 <Button
+                  color="amber"
                   className="mx-1"
                   type="button"
                   onClick={() => {
@@ -133,6 +140,7 @@ export default function Home() {
                   修改
                 </Button>
                 <Button
+                  color="cyan"
                   className="mx-1"
                   type="button"
                   onClick={() => {

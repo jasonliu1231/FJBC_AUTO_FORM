@@ -63,19 +63,15 @@ export default function Home() {
         banner: bannerImage,
         finish_photo: finishImage,
         content: textareaValue,
-        detail: detail.map((item) => {
-          return {
-            ...item,
-            content: item.content.filter((item) => item != "")
-          };
-        })
+        detail: detail
       })
     };
 
     const response = await fetch("/api/from/create", config);
     const res = await response.json();
     if (response.ok) {
-      alert("FINISH");
+      alert("表單建立完成！");
+      window.location.href = "/admin/list";
     } else {
       alert("ERROR");
     }
@@ -122,9 +118,11 @@ export default function Home() {
 
   return (
     <div className="p-10">
-      <div className="grid grid-cols-3 gap-5 p-10 border">
+      <div className="grid grid-cols-3 gap-5 p-10 border-2 border-gray-400 rounded-xl">
         <Field>
-          <Label>表單名稱</Label>
+          <Label>
+            表單名稱<span className="text-red-600">(必填欄位)</span>
+          </Label>
           <Input
             name="name"
             onChange={(e) => {
@@ -318,7 +316,7 @@ export default function Home() {
                 </RadioGroup>
               </Fieldset>
               <Fieldset>
-                <Legend>必填</Legend>
+                <Legend>是否必填</Legend>
                 <RadioGroup
                   name={`required` + index}
                   value={item.required}
@@ -383,10 +381,16 @@ export default function Home() {
                     <Radio value="4" />
                     <Label>行事曆</Label>
                   </RadioField>
+                  <RadioField>
+                    <Radio value="5" />
+                    <Label>備注</Label>
+                  </RadioField>
                 </RadioGroup>
               </Fieldset>
               <Field className="col-span-2">
-                <Label>欄位名稱</Label>
+                <Label>
+                  欄位名稱<span className="text-red-600">(必填欄位)</span>
+                </Label>
                 <Input
                   name={`title` + index}
                   value={item.title}
@@ -406,25 +410,46 @@ export default function Home() {
                   }}
                 />
               </Field>
-              <Field className="col-span-2">
-                <Label>內容</Label>
-                {item.content?.map((content, content_index) => (
-                  <div key={content_index}>
-                    <Input
-                      value={content}
-                      onChange={(e) => {
+              {(item.type == 2 || item.type == 3) && (
+                <Field className="col-span-2">
+                  <Label>內容</Label>
+                  {item.content?.map((content, content_index) => (
+                    <div key={content_index}>
+                      <Input
+                        value={content}
+                        onChange={(e) => {
+                          setDetail(
+                            detail.map((i, idx) => {
+                              if (idx == index) {
+                                return {
+                                  ...i,
+                                  content: i.content.map((ii, iidx) => {
+                                    if (content_index == iidx) {
+                                      return e.target.value;
+                                    } else {
+                                      return ii;
+                                    }
+                                  })
+                                };
+                              } else {
+                                return i;
+                              }
+                            })
+                          );
+                        }}
+                      />
+                    </div>
+                  ))}
+                  <div className="p-2 flex justify-center">
+                    <Button
+                      color="teal"
+                      onClick={() => {
                         setDetail(
                           detail.map((i, idx) => {
                             if (idx == index) {
                               return {
                                 ...i,
-                                content: i.content.map((ii, iidx) => {
-                                  if (content_index == iidx) {
-                                    return e.target.value;
-                                  } else {
-                                    return ii;
-                                  }
-                                })
+                                content: [...item.content, ""]
                               };
                             } else {
                               return i;
@@ -432,36 +457,19 @@ export default function Home() {
                           })
                         );
                       }}
-                    />
+                    >
+                      新增
+                    </Button>
                   </div>
-                ))}
-                <div className="p-2 flex justify-center">
-                  <Button
-                    onClick={() => {
-                      setDetail(
-                        detail.map((i, idx) => {
-                          if (idx == index) {
-                            return {
-                              ...i,
-                              content: [...item.content, ""]
-                            };
-                          } else {
-                            return i;
-                          }
-                        })
-                      );
-                    }}
-                  >
-                    新增
-                  </Button>
-                </div>
-              </Field>
+                </Field>
+              )}
             </div>
           </div>
         );
       })}
       <div className="flex justify-between p-5">
         <Button
+          color="blue"
           onClick={() => {
             if (detail.length < 20) {
               setDetail([...detail, item_def]);
@@ -470,7 +478,12 @@ export default function Home() {
         >
           新增客製化框
         </Button>
-        <Button onClick={createFrom}>送出</Button>
+        <Button
+          color="green"
+          onClick={createFrom}
+        >
+          送出
+        </Button>
       </div>
     </div>
   );

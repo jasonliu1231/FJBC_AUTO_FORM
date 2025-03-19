@@ -10,7 +10,7 @@ export default async function GetListAPI(req, res) {
         FROM form 
         LEFT JOIN form_department ON form.department_id = form_department.id
         LEFT JOIN form_category ON form.category_id = form_category.id
-        ORDER BY form.create_by DESC
+        ORDER BY form.create_at DESC
     `;
     let result = await pool.query(sql);
     res.status(200).json(result.rows);

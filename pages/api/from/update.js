@@ -26,14 +26,14 @@ export default async function UpdateAPI(req, res) {
     await pool.query(sql, params);
 
     for (let i = 0; i < body.detail.length; i++) {
-      sql = `SELECT * FROM form_detail WHERE id = $1`;
+      sql = `SELECT id FROM form_detail WHERE id = $1`;
       let result = await pool.query(sql, [body.detail[i].id]);
       if (result.rows.length == 0) {
         sql = `
-        INSERT INTO form_detail(form_id, index, type, required, title, enable)
-        VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
+          INSERT INTO form_detail(form_id, index, type, required, title, enable)
+          VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
         `;
-        params = [body.id, i, body.detail[i].type, body.detail[i].required, body.detail[i].title, body.detail[i].enable];
+        params = [body.id, body.detail[i].index, body.detail[i].type, body.detail[i].required, body.detail[i].title, body.detail[i].enable];
         let detail = await pool.query(sql, params);
         for (let j = 0; j < body.detail[i].content.length; j++) {
           const content = body.detail[i].content[j];
@@ -45,10 +45,8 @@ export default async function UpdateAPI(req, res) {
           await pool.query(sql, params);
         }
       } else {
-        sql = `
-        UPDATE form_detail SET type=$1, required=$2, title=$3, enable=$4 WHERE id=$5
-        `;
-        params = [body.detail[i].type, body.detail[i].required, body.detail[i].title, body.detail[i].enable, body.detail[i].id];
+        sql = `UPDATE form_detail SET type=$1, required=$2, title=$3, enable=$4, index=$6 WHERE id=$5`;
+        params = [body.detail[i].type, body.detail[i].required, body.detail[i].title, body.detail[i].enable, body.detail[i].id, body.detail[i].index];
         await pool.query(sql, params);
         console.log(body.detail[i].content);
         for (let j = 0; j < body.detail[i].content.length; j++) {
