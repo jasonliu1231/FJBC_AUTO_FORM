@@ -17,26 +17,33 @@ export default async function SaveAPI(req, res) {
       }
     }
 
+    // 設定要插入的 items 數量
+    const itemCount = 50;
+
+    // 動態生成 SQL 欄位名稱
+    const itemColumns = Array.from({ length: itemCount }, (_, i) => `items${i}`).join(", ");
+
+    // 動態生成 VALUES 參數占位符
+    const valuePlaceholders = Array.from({ length: itemCount + 1 }, (_, i) => `$${i + 1}`).join(", ");
+
+    // 組合 SQL 語法
     sql = `
-        INSERT INTO form_return_list(form_id, items0, items1, items2, items3, items4, items5, items6, items7, items8, items9)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-    `;
+    INSERT INTO form_return_list (form_id, ${itemColumns})
+    VALUES (${valuePlaceholders})
+`;
+
     params = [
       body.form_id,
-      body.items0 ? (Array.isArray(body.items0.content_value) ? body.items0.content_value.join(", ") : body.items0.content_value) : null,
-      body.items1 ? (Array.isArray(body.items1.content_value) ? body.items1.content_value.join(", ") : body.items1.content_value) : null,
-      body.items2 ? (Array.isArray(body.items2.content_value) ? body.items2.content_value.join(", ") : body.items2.content_value) : null,
-      body.items3 ? (Array.isArray(body.items3.content_value) ? body.items3.content_value.join(", ") : body.items3.content_value) : null,
-      body.items4 ? (Array.isArray(body.items4.content_value) ? body.items4.content_value.join(", ") : body.items4.content_value) : null,
-      body.items5 ? (Array.isArray(body.items5.content_value) ? body.items5.content_value.join(", ") : body.items5.content_value) : null,
-      body.items6 ? (Array.isArray(body.items6.content_value) ? body.items6.content_value.join(", ") : body.items6.content_value) : null,
-      body.items7 ? (Array.isArray(body.items7.content_value) ? body.items7.content_value.join(", ") : body.items7.content_value) : null,
-      body.items8 ? (Array.isArray(body.items8.content_value) ? body.items8.content_value.join(", ") : body.items8.content_value) : null,
-      body.items9 ? (Array.isArray(body.items9.content_value) ? body.items9.content_value.join(", ") : body.items9.content_value) : null
+      ...Array.from({ length: itemCount }, (_, i) => {
+        const item = body[`items${i}`];
+        return item ? (Array.isArray(item.content_value) ? item.content_value.join(", ") : item.content_value) : null;
+      })
     ];
+
+    console.log(sql); // 可以先檢查一下 SQL 是否正確
     await pool.query(sql, params);
 
-    for (let i = 0; i < 19; i++) {
+    for (let i = 0; i < 50; i++) {
       const items = body[`items${i}`];
       const isEmpty = items === undefined ? false : true;
 

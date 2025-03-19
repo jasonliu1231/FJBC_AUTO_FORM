@@ -20,9 +20,10 @@ export default function Home() {
 
   async function checkFrom() {
     let check = true;
+    console.log(data);
     const list = detail.map((item) => {
       if (item.required && item.enable) {
-        if (item.type == "1" || item.type == "4") {
+        if (item.type == "1" || item.type == "4" || item.type == "5") {
           if (data[`items${item.index}`].content_value == "") {
             check = false;
             return {
@@ -57,6 +58,8 @@ export default function Home() {
         return item;
       }
     });
+
+    console.log(list);
 
     if (check) {
       saveFrom();

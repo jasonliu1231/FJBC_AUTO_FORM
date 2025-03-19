@@ -627,7 +627,7 @@ export default function Home() {
         <Button
           color="blue"
           onClick={() => {
-            if (detail.length < 20) {
+            if (detail.length < 50) {
               setDetail([...detail, { ...item_def, index: detail.length }]);
             }
           }}

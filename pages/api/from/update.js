@@ -22,7 +22,19 @@ export default async function UpdateAPI(req, res) {
     let sql = `
       UPDATE form SET name=$1, banner=$2, content=$3, deadline=$4, auto_open=$5, auto_close=$6, department_id=$7, category_id=$9, finish_photo=$10, finish_message=$11 WHERE id =$8
     `;
-    let params = [body.name, body.banner, body.content, body.deadline, body.auto_open, body.auto_close, body.department_id, body.id, body.category_id, body.finish_photo, body.finish_message];
+    let params = [
+      body.name,
+      body.banner,
+      body.content,
+      body.deadline || null,
+      body.auto_open || null,
+      body.auto_close || null,
+      body.department_id,
+      body.id,
+      body.category_id,
+      body.finish_photo,
+      body.finish_message
+    ];
     await pool.query(sql, params);
 
     for (let i = 0; i < body.detail.length; i++) {
