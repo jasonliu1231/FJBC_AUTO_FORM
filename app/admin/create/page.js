@@ -383,7 +383,7 @@ export default function Home() {
                   </RadioField>
                   <RadioField>
                     <Radio value="5" />
-                    <Label>備注</Label>
+                    <Label>備住</Label>
                   </RadioField>
                 </RadioGroup>
               </Fieldset>

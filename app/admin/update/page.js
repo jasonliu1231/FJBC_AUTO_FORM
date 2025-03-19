@@ -505,7 +505,7 @@ export default function Home() {
                       color="sky"
                       value="5"
                     />
-                    <Label>備注</Label>
+                    <Label>備住</Label>
                   </RadioField>
                 </RadioGroup>
               </Fieldset>

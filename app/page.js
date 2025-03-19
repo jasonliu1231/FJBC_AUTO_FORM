@@ -20,7 +20,6 @@ export default function Home() {
 
   async function checkFrom() {
     let check = true;
-    console.log(data);
     const list = detail.map((item) => {
       if (item.required && item.enable) {
         if (item.type == "1" || item.type == "4" || item.type == "5") {
@@ -59,8 +58,6 @@ export default function Home() {
       }
     });
 
-    console.log(list);
-
     if (check) {
       saveFrom();
     } else {
@@ -82,6 +79,9 @@ export default function Home() {
     const res = await response.json();
     if (response.ok) {
       setIsOpen(true);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } else {
       alert(res.msg);
     }
@@ -176,7 +176,7 @@ export default function Home() {
         onClose={setIsOpen}
         size="3xl"
       >
-        <DialogTitle className="text-center">{form.finish_message}</DialogTitle>
+        <DialogTitle className="text-center">{form.finish_message || "感謝您的填寫～"}</DialogTitle>
         <DialogBody>
           {form.finish_photo && (
             <div className="col-span-1 flex justify-center items-center bg-gray-100">
@@ -188,14 +188,14 @@ export default function Home() {
             </div>
           )}
         </DialogBody>
-        <div className="flex justify-center">
+        {/* <div className="flex justify-center">
           <Button
             plain
             onClick={() => setIsOpen(false)}
           >
             關閉
           </Button>
-        </div>
+        </div> */}
       </Dialog>
       <div className="">
         {form?.banner && (

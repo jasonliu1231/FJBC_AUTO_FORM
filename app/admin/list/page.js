@@ -113,7 +113,7 @@ export default function Home() {
                   color="blue"
                   className="mx-1"
                   onClick={() => {
-                    window.open(`/?id=${item.id}`, "_blank");
+                    window.open(`https://activity.fjbcgroup.com/?id=${item.id}`, "_blank");
                   }}
                 >
                   表單頁
@@ -124,7 +124,7 @@ export default function Home() {
                   type="button"
                   onClick={() => {
                     setIsOpen(true);
-                    setQRCode(`http://172.16.150.23:3000/?id=${item.id}`);
+                    setQRCode(`https://activity.fjbcgroup.com?id=${item.id}`);
                   }}
                 >
                   QRCode
