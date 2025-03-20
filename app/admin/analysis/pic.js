@@ -130,7 +130,7 @@ export default function Home({ form_id }) {
   };
 
   return (
-    <div className="px-10 py-5 grid grid-cols-3 gap-4">
+    <div className="px-10 py-5 grid grid-cols-2 gap-4">
       {returnData.map((item, index) => {
         const backgroundColors = generateColors(item.content.length);
         return (
