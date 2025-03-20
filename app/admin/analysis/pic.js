@@ -10,6 +10,7 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 ChartJS.register(ChartDataLabels, CategoryScale, BarElement, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement);
 // 圖表的選項
 const barOptions = {
+  maintainAspectRatio: false,
   responsive: true,
   plugins: {
     legend: {
@@ -19,10 +20,10 @@ const barOptions = {
       display: false
     },
     datalabels: {
-      display: false, // 開啟數據標籤顯示
+      display: true, // 開啟數據標籤顯示
       align: "center", // 顯示位置：可選 top, start, end, center 等
       anchor: "end", // 數據標籤位置
-      color: "red", // 顏色
+      color: "black", // 顏色
       font: {
         size: 20, // 字體大小
         weight: "bold" // 字體粗細
@@ -35,6 +36,7 @@ const barOptions = {
 };
 
 const lineOptions = {
+  maintainAspectRatio: false,
   responsive: true,
   plugins: {
     legend: {
@@ -46,10 +48,10 @@ const lineOptions = {
     datalabels: {
       display: false,
       align: "top",
-      anchor: "end",
+      anchor: "start",
       color: "black",
       font: {
-        size: 14,
+        size: 20,
         weight: "bold"
       },
       formatter: (value) => {
@@ -60,6 +62,7 @@ const lineOptions = {
 };
 
 const pieOptions = {
+  maintainAspectRatio: false,
   responsive: true,
   plugins: {
     legend: {
@@ -71,10 +74,10 @@ const pieOptions = {
     datalabels: {
       display: false,
       align: "top",
-      anchor: "end",
+      anchor: "center",
       color: "black",
       font: {
-        size: 14,
+        size: 20,
         weight: "bold"
       },
       formatter: (value) => {
@@ -127,17 +130,16 @@ export default function Home({ form_id }) {
   };
 
   return (
-    <div className="px-10 py-5">
+    <div className="px-10 py-5 grid grid-cols-3 gap-4">
       {returnData.map((item, index) => {
-        console.log(item);
         const backgroundColors = generateColors(item.content.length);
-
         return (
           <div key={index}>
             <div className="flex items-end m-3">
-              <div className="text-2xl text-blue-600 mt-12">{item.title}</div>
+              <div className="flex-1 text-lg text-blue-600 mt-12">{item.title}</div>
               <Button
-                className="mx-2"
+                color="sky"
+                className="mx-1"
                 onClick={() => {
                   setReturnData(
                     returnData.map((i, idx) => {
@@ -156,7 +158,8 @@ export default function Home({ form_id }) {
                 長條圖
               </Button>
               <Button
-                className="mx-2"
+                color="sky"
+                className="mx-1"
                 onClick={() => {
                   setReturnData(
                     returnData.map((i, idx) => {
@@ -175,7 +178,8 @@ export default function Home({ form_id }) {
                 折線圖
               </Button>
               <Button
-                className="mx-2"
+                color="sky"
+                className="mx-1"
                 onClick={() => {
                   setReturnData(
                     returnData.map((i, idx) => {
@@ -195,9 +199,9 @@ export default function Home({ form_id }) {
               </Button>
             </div>
 
-            <div className="p-20 border-2">
+            <div className="p-6 border-2">
               {item.show == 1 && (
-                <div className="w-1/2">
+                <div className="w-full">
                   <Bar
                     data={{
                       labels: item.content,
@@ -209,12 +213,14 @@ export default function Home({ form_id }) {
                       ]
                     }}
                     options={barOptions}
+                    width={200}
+                    height={200}
                   />
                 </div>
               )}
 
               {item.show == 2 && (
-                <div className="w-1/2">
+                <div className="w-full">
                   <Line
                     data={{
                       labels: item.content,
@@ -227,12 +233,14 @@ export default function Home({ form_id }) {
                       ]
                     }}
                     options={lineOptions}
+                    width={200}
+                    height={200}
                   />
                 </div>
               )}
 
               {item.show == 3 && (
-                <div className="w-1/2">
+                <div className="w-full">
                   <Pie
                     data={{
                       labels: item.content,
@@ -244,6 +252,8 @@ export default function Home({ form_id }) {
                       ]
                     }}
                     options={pieOptions}
+                    width={200}
+                    height={200}
                   />
                 </div>
               )}

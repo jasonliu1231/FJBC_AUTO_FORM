@@ -22,11 +22,12 @@ export default async function CreateAPI(req, res) {
       params = [form.rows[0].id, i, body.detail[i].type, body.detail[i].required, body.detail[i].title, body.detail[i].enable];
       let detail = await pool.query(sql, params);
       for (let j = 0; j < body.detail[i].content.length; j++) {
+        const content = body.detail[i].content;
         sql = `
-        INSERT INTO detail_content(detail_id, index, content)
-        VALUES ($1, $2, $3) RETURNING id
+        INSERT INTO detail_content(detail_id, index, content, other_input)
+        VALUES ($1, $2, $3, $4)
         `;
-        params = [detail.rows[0].id, j, body.detail[i].content[j]];
+        params = [detail.rows[0].id, j, content[j].content, content[j].other_input];
         await pool.query(sql, params);
       }
     }

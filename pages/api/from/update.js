@@ -60,19 +60,18 @@ export default async function UpdateAPI(req, res) {
         sql = `UPDATE form_detail SET type=$1, required=$2, title=$3, enable=$4, index=$6 WHERE id=$5`;
         params = [body.detail[i].type, body.detail[i].required, body.detail[i].title, body.detail[i].enable, body.detail[i].id, body.detail[i].index];
         await pool.query(sql, params);
-        console.log(body.detail[i].content);
         for (let j = 0; j < body.detail[i].content.length; j++) {
           const content = body.detail[i].content[j];
           sql = `SELECT id FROM detail_content WHERE id=$1 AND detail_id=$2`;
           params = [content.content_id, body.detail[i].id];
           result = await pool.query(sql, params);
           if (result.rows.length == 0) {
-            if (content.enable) sql = `INSERT INTO detail_content(detail_id, index, content, enable) VALUES ($1, $2, $3, $4)`;
-            params = [body.detail[i].id, j, content.content, content.enable];
+            if (content.enable) sql = `INSERT INTO detail_content(detail_id, index, content, enable, other_input) VALUES ($1, $2, $3, $4, $5)`;
+            params = [body.detail[i].id, j, content.content, content.enable, content.other_input];
             await pool.query(sql, params);
           } else {
-            sql = `UPDATE detail_content SET content=$1, enable=$4 WHERE id=$2 AND detail_id=$3`;
-            params = [content.content, content.content_id, body.detail[i].id, content.enable];
+            sql = `UPDATE detail_content SET content=$1, enable=$4, other_input=$5 WHERE id=$2 AND detail_id=$3`;
+            params = [content.content, content.content_id, body.detail[i].id, content.enable, content.other_input];
             await pool.query(sql, params);
           }
         }

@@ -36,11 +36,32 @@ export default async function SaveAPI(req, res) {
       body.form_id,
       ...Array.from({ length: itemCount }, (_, i) => {
         const item = body[`items${i}`];
-        return item ? (Array.isArray(item.content_value) ? item.content_value.join(", ") : item.content_value) : null;
+        if (item) {
+          if (Array.isArray(item.content_value)) {
+            let content_data = [];
+            for (let i = 0; i < item.content_value.length; i++) {
+              if (item.content_value[i] && item.content_value[i] != "") {
+                if (item.other_input[i] && item.other_input[i] != "") {
+                  content_data.push(item.content_value[i] + ":" + item.other_input[i]);
+                } else {
+                  content_data.push(item.content_value[i]);
+                }
+              }
+            }
+            return content_data.join(", ");
+          } else {
+            if (item.other_input && item.other_input != "") {
+              return item.content_value + ":" + item.other_input;
+            } else {
+              return item.content_value;
+            }
+          }
+        } else {
+          return null;
+        }
       })
     ];
 
-    console.log(sql); // 可以先檢查一下 SQL 是否正確
     await pool.query(sql, params);
 
     for (let i = 0; i < 50; i++) {
@@ -55,7 +76,9 @@ export default async function SaveAPI(req, res) {
         } else if (items.type == "3") {
           const content_id = items.content_id;
           for (let j = 0; j < content_id.length; j++) {
-            await saveCount(body.form_id, content_id[j]);
+            if (content_id[j]) {
+              await saveCount(body.form_id, content_id[j]);
+            }
           }
         }
       }

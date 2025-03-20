@@ -11,6 +11,7 @@ export default async function DetailAPI(req, res) {
             JSON_AGG(
               JSON_BUILD_OBJECT(
                 'enable', detail_content.enable,
+                'other_input', detail_content.other_input,
                 'content_id', COALESCE(detail_content.id, null),
                 'content', COALESCE(detail_content.content, null)
               ) ORDER BY detail_content.index

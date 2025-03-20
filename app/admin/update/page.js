@@ -4,7 +4,7 @@ import { Field, Label, Description, Fieldset, Legend } from "@/components/fields
 import { Input } from "@/components/input";
 import { Listbox, ListboxLabel, ListboxOption } from "@/components/listbox";
 import { Radio, RadioField, RadioGroup } from "@/components/radio";
-import { Switch } from "@/components/switch";
+import { Switch, SwitchField } from "@/components/switch";
 import { Text } from "@/components/text";
 import { Button } from "@/components/button";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -15,7 +15,7 @@ const item_def = {
   type: "1",
   required: true,
   title: "",
-  content: [{ enable: true, content: [] }]
+  content: [{ enable: true, other_input: false, content: [] }]
 };
 
 function changeDate(data) {
@@ -357,7 +357,7 @@ export default function Home() {
             key={index}
             className="border-b-1 p-5"
           >
-            <div className="grid grid-cols-8 gap-5">
+            <div className="grid grid-cols-12 gap-5">
               <Field>
                 <Label>欄位序號</Label>
                 <Input
@@ -509,7 +509,7 @@ export default function Home() {
                   </RadioField>
                 </RadioGroup>
               </Fieldset>
-              <Field className="col-span-2">
+              <Field className="col-span-3">
                 <Label>
                   欄位名稱<span className="text-red-600">(必填欄位)</span>
                 </Label>
@@ -533,7 +533,7 @@ export default function Home() {
                 />
               </Field>
               {(item.type == 2 || item.type == 3) && (
-                <Field className="col-span-2">
+                <Field className="col-span-5">
                   <Label>內容</Label>
                   {item.content?.map((content, content_index) => (
                     <div
@@ -541,6 +541,7 @@ export default function Home() {
                       className="flex items-center"
                     >
                       <Input
+                        className="flex-1"
                         value={content.content}
                         onChange={(e) => {
                           setDetail(
@@ -566,34 +567,67 @@ export default function Home() {
                           );
                         }}
                       />
-                      <Switch
-                        className="mx-2"
-                        color="green"
-                        checked={content.enable}
-                        onChange={(val) => {
-                          setDetail(
-                            detail.map((i, idx) => {
-                              if (idx == index) {
-                                return {
-                                  ...i,
-                                  content: i.content.map((ii, iidx) => {
-                                    if (content_index == iidx) {
-                                      return {
-                                        ...ii,
-                                        enable: val
-                                      };
-                                    } else {
-                                      return ii;
-                                    }
-                                  })
-                                };
-                              } else {
-                                return i;
-                              }
-                            })
-                          );
-                        }}
-                      />
+                      <SwitchField className="mx-2">
+                        <Label>啟用</Label>
+                        <Switch
+                          className="mx-2"
+                          color="green"
+                          checked={content.enable}
+                          onChange={(val) => {
+                            setDetail(
+                              detail.map((i, idx) => {
+                                if (idx == index) {
+                                  return {
+                                    ...i,
+                                    content: i.content.map((ii, iidx) => {
+                                      if (content_index == iidx) {
+                                        return {
+                                          ...ii,
+                                          enable: val
+                                        };
+                                      } else {
+                                        return ii;
+                                      }
+                                    })
+                                  };
+                                } else {
+                                  return i;
+                                }
+                              })
+                            );
+                          }}
+                        />
+                      </SwitchField>
+                      <SwitchField className="mx-2">
+                        <Label>額外欄</Label>
+                        <Switch
+                          color="emerald"
+                          checked={content.other_input}
+                          onChange={(val) => {
+                            setDetail(
+                              detail.map((i, idx) => {
+                                if (idx == index) {
+                                  return {
+                                    ...i,
+                                    content: i.content.map((ii, iidx) => {
+                                      if (content_index == iidx) {
+                                        return {
+                                          ...ii,
+                                          other_input: val
+                                        };
+                                      } else {
+                                        return ii;
+                                      }
+                                    })
+                                  };
+                                } else {
+                                  return i;
+                                }
+                              })
+                            );
+                          }}
+                        />
+                      </SwitchField>
                     </div>
                   ))}
                   <div className="p-2 flex justify-center">
@@ -605,7 +639,7 @@ export default function Home() {
                             if (idx == index) {
                               return {
                                 ...i,
-                                content: [...item.content, { content: "", enable: true }]
+                                content: [...item.content, { content: "", enable: true, other_input: false }]
                               };
                             } else {
                               return i;

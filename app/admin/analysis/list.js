@@ -49,7 +49,7 @@ export default function Home({ form_id }) {
           <TableHead>
             <TableRow className="bg-green-50">
               {returnData.form_title?.map((item, index) => (
-                <TableHeader key={`${item.title}${index}`}>{item.title}</TableHeader>
+                <TableHeader key={`show_${item.title}_${index}`}>{item.title}</TableHeader>
               ))}
               <TableHeader>填表時間</TableHeader>
             </TableRow>
@@ -61,7 +61,7 @@ export default function Home({ form_id }) {
                 className="hover:bg-blue-50"
               >
                 {Array.from({ length: returnData.form_title?.length }, (_, index) => {
-                  return <TableCell key={`items${index}`}>{item[`items${index}`]}</TableCell>;
+                  return <TableCell key={`show_${item[`items${index}`]}_${index}`}>{item[`items${index}`]}</TableCell>;
                 })}
                 <TableCell>{new Date(item.create_at).toLocaleString()}</TableCell>
               </TableRow>
@@ -73,7 +73,7 @@ export default function Home({ form_id }) {
           <TableHead>
             <TableRow className="bg-green-50">
               {returnData.form_title?.map((item, index) => (
-                <>{item.enable && <TableHeader key={`${item.title}${index}`}>{item.title}</TableHeader>}</>
+                <>{item.enable && <TableHeader key={`no_show_${item.title}_${index}`}>{item.title}</TableHeader>}</>
               ))}
               <TableHeader>填表時間</TableHeader>
             </TableRow>
@@ -86,7 +86,7 @@ export default function Home({ form_id }) {
               >
                 {Array.from({ length: returnData.form_title?.length }, (_, index) => {
                   if (returnData.form_title[index]?.enable) {
-                    return <TableCell key={`items${index}`}>{item[`items${index}`]}</TableCell>;
+                    return <TableCell key={`no_show_${item[`items${index}`]}_${index}`}>{item[`items${index}`]}</TableCell>;
                   }
                 })}
                 <TableCell>{new Date(item.create_at).toLocaleString()}</TableCell>

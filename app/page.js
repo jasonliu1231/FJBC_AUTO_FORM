@@ -111,15 +111,19 @@ export default function Home() {
       const def_val = res.detail.map((item) => {
         let content_id = null;
         let content_value = "";
+        let other_input = null;
         if (item.type == "1") {
           content_id = null;
           content_value = "";
+          other_input = null;
         } else if (item.type == "2") {
           content_id = "";
           content_value = "";
+          other_input = "";
         } else if (item.type == "3") {
-          content_id = [];
-          content_value = [];
+          content_id = Array(item.content.length).fill("");
+          content_value = Array(item.content.length).fill("");
+          other_input = Array(item.content.length).fill("");
         }
 
         return {
@@ -127,7 +131,8 @@ export default function Home() {
           index: item.index,
           enable: item.enable,
           content_id,
-          content_value
+          content_value,
+          other_input
         };
       });
 
@@ -188,14 +193,6 @@ export default function Home() {
             </div>
           )}
         </DialogBody>
-        {/* <div className="flex justify-center">
-          <Button
-            plain
-            onClick={() => setIsOpen(false)}
-          >
-            關閉
-          </Button>
-        </div> */}
       </Dialog>
       <div className="">
         {form?.banner && (
@@ -233,7 +230,7 @@ export default function Home() {
                         <span className="text-red-500 m-2">{items.required ? "(必填)" : ""}</span>
                       </Label>
                       <Input
-                        className="bg-gray-100 rounded-lg focus:text-gray-600"
+                        className="bg-gray-100 rounded-lg"
                         name={items.title}
                         onChange={(e) => {
                           setData({
@@ -263,7 +260,9 @@ export default function Home() {
                             [`items${items.index}`]: {
                               ...data[`items${items.index}`],
                               content_id: item_val[0],
-                              content_value: item_val[1]
+                              content_value: item_val[1],
+                              content_index: item_val[2],
+                              other_input: ""
                             }
                           });
                         }}
@@ -271,16 +270,35 @@ export default function Home() {
                         {items.content.map((item, index) => (
                           <div key={index}>
                             {item.enable && (
-                              <RadioField>
-                                <Radio
-                                  className="bg-white rounded-full"
-                                  color="cyan"
-                                  value={`${item.id}@$${item.content}`}
-                                />
-                                <Label>
-                                  <span className="text-gray-600">{item.content}</span>
-                                </Label>
-                              </RadioField>
+                              <div className="flex items-center">
+                                <RadioField>
+                                  <Radio
+                                    className="bg-white rounded-full"
+                                    color="cyan"
+                                    value={`${item.id}@$${item.content}@$${index}`}
+                                  />
+                                  <Label>
+                                    <span className="mx-2 text-gray-600">{item.content}</span>
+                                  </Label>
+                                </RadioField>
+                                {item.other_input && data[`items${items.index}`].content_index == index && (
+                                  <Input
+                                    placeholder="其他建議"
+                                    className="flex-1 bg-gray-100 rounded-lg"
+                                    value={data[`items${items.index}`].other_input}
+                                    onChange={(e) => {
+                                      setData({
+                                        ...data,
+                                        [`items${items.index}`]: {
+                                          ...data[`items${items.index}`],
+                                          content_index: index,
+                                          other_input: e.target.value
+                                        }
+                                      });
+                                    }}
+                                  />
+                                )}
+                              </div>
                             )}
                           </div>
                         ))}
@@ -296,37 +314,68 @@ export default function Home() {
                         {items.content.map((item, index) => (
                           <div key={index}>
                             {item.enable && (
-                              <CheckboxField>
-                                <Checkbox
-                                  className="bg-white rounded-sm"
-                                  color="cyan"
-                                  name={items.id}
-                                  onChange={(checked) => {
-                                    if (checked) {
+                              <div className="flex items-center">
+                                <CheckboxField>
+                                  <Checkbox
+                                    className="bg-white rounded-sm"
+                                    color="cyan"
+                                    name={items.id}
+                                    onChange={(checked) => {
                                       setData({
                                         ...data,
                                         [`items${items.index}`]: {
                                           ...data[`items${items.index}`],
-                                          content_id: [...data[`items${items.index}`].content_id, item.id],
-                                          content_value: [...data[`items${items.index}`].content_value, item.content]
+                                          content_id: data[`items${items.index}`].content_id?.map((input, idx) => {
+                                            if (index == idx) {
+                                              return checked ? item.id : "";
+                                            } else {
+                                              return input;
+                                            }
+                                          }),
+                                          content_value: data[`items${items.index}`].content_value?.map((input, idx) => {
+                                            if (index == idx) {
+                                              return checked ? item.content : "";
+                                            } else {
+                                              return input;
+                                            }
+                                          }),
+                                          other_input: data[`items${items.index}`].other_input?.map((input, idx) => {
+                                            if (index == idx) {
+                                              return checked ? input : "";
+                                            } else {
+                                              return input;
+                                            }
+                                          })
                                         }
                                       });
-                                    } else {
+                                    }}
+                                  />
+                                  <Label>
+                                    <span className="mx-2 text-gray-600">{item.content}</span>
+                                  </Label>
+                                </CheckboxField>
+                                {item.other_input && (
+                                  <Input
+                                    className="flex-1 bg-gray-100 rounded-lg"
+                                    value={data[`items${items.index}`].other_input[`${index}`]}
+                                    onChange={(e) => {
                                       setData({
                                         ...data,
                                         [`items${items.index}`]: {
                                           ...data[`items${items.index}`],
-                                          content_id: data[`items${items.index}`].content_id.filter((i) => i != item.id),
-                                          content_value: data[`items${items.index}`].content_value.filter((i) => i != item.content)
+                                          other_input: data[`items${items.index}`].other_input?.map((input, idx) => {
+                                            if (index == idx) {
+                                              return e.target.value;
+                                            } else {
+                                              return input;
+                                            }
+                                          })
                                         }
                                       });
-                                    }
-                                  }}
-                                />
-                                <Label>
-                                  <span className="text-gray-600">{item.content}</span>
-                                </Label>
-                              </CheckboxField>
+                                    }}
+                                  />
+                                )}
+                              </div>
                             )}
                           </div>
                         ))}
@@ -385,7 +434,7 @@ export default function Home() {
             color="green"
             onClick={checkFrom}
           >
-            Save
+            送出
           </Button>
         </div>
       </div>

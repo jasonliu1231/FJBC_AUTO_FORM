@@ -10,7 +10,7 @@ export default async function DetailAPI(req, res) {
     }
     sql = `
         WITH detail_content AS (
-          SELECT id, detail_id, content, enable FROM detail_content
+          SELECT id, detail_id, content, enable, other_input FROM detail_content
         )
 
         SELECT 
@@ -19,6 +19,7 @@ export default async function DetailAPI(req, res) {
             JSON_BUILD_OBJECT(
               'id', detail_content.id,
               'enable', detail_content.enable,
+              'other_input', detail_content.other_input,
               'detail_id', detail_content.id,
               'content', detail_content.content
             )

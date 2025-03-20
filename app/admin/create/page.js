@@ -4,7 +4,7 @@ import { Field, Label, Description, Fieldset, Legend } from "@/components/fields
 import { Input } from "@/components/input";
 import { Listbox, ListboxLabel, ListboxOption } from "@/components/listbox";
 import { Radio, RadioField, RadioGroup } from "@/components/radio";
-import { Text } from "@/components/text";
+import { Switch, SwitchField } from "@/components/switch";
 import { Button } from "@/components/button";
 import { useEffect, useLayoutEffect, useState } from "react";
 import Editor from "../Editor";
@@ -14,7 +14,12 @@ const item_def = {
   type: "1",
   required: true,
   title: "",
-  content: [""]
+  content: [
+    {
+      content: "",
+      other_input: false
+    }
+  ]
 };
 
 export default function Home() {
@@ -411,12 +416,16 @@ export default function Home() {
                 />
               </Field>
               {(item.type == 2 || item.type == 3) && (
-                <Field className="col-span-2">
+                <Field className="col-span-3">
                   <Label>內容</Label>
-                  {item.content?.map((content, content_index) => (
-                    <div key={content_index}>
+                  {item.content?.map((item, content_index) => (
+                    <div
+                      key={content_index}
+                      className="flex"
+                    >
                       <Input
-                        value={content}
+                        className="flex-1"
+                        value={item.content}
                         onChange={(e) => {
                           setDetail(
                             detail.map((i, idx) => {
@@ -425,7 +434,10 @@ export default function Home() {
                                   ...i,
                                   content: i.content.map((ii, iidx) => {
                                     if (content_index == iidx) {
-                                      return e.target.value;
+                                      return {
+                                        ...ii,
+                                        content: e.target.value
+                                      };
                                     } else {
                                       return ii;
                                     }
@@ -438,6 +450,36 @@ export default function Home() {
                           );
                         }}
                       />
+                      <SwitchField className="mx-2">
+                        <Label>額外輸入筐</Label>
+                        <Switch
+                          color="green"
+                          checked={item.other_input}
+                          onChange={(val) => {
+                            setDetail(
+                              detail.map((i, idx) => {
+                                if (idx == index) {
+                                  return {
+                                    ...i,
+                                    content: i.content.map((ii, iidx) => {
+                                      if (content_index == iidx) {
+                                        return {
+                                          ...ii,
+                                          other_input: val
+                                        };
+                                      } else {
+                                        return ii;
+                                      }
+                                    })
+                                  };
+                                } else {
+                                  return i;
+                                }
+                              })
+                            );
+                          }}
+                        />
+                      </SwitchField>
                     </div>
                   ))}
                   <div className="p-2 flex justify-center">
@@ -449,7 +491,13 @@ export default function Home() {
                             if (idx == index) {
                               return {
                                 ...i,
-                                content: [...item.content, ""]
+                                content: [
+                                  ...item.content,
+                                  {
+                                    content: "",
+                                    other_input: false
+                                  }
+                                ]
                               };
                             } else {
                               return i;
