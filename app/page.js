@@ -170,7 +170,7 @@ export default function Home() {
   }
 
   return (
-    <div className="max-w-md sm:max-w-xl mx-auto bg-gray-100">
+    <div className="max-w-md sm:max-w-xl mx-auto bg-gray-100 text-gray-700">
       <Dialog
         open={isOpen}
         onClose={setIsOpen}
@@ -229,11 +229,11 @@ export default function Home() {
                   {items.type == "1" ? (
                     <Field>
                       <Label className="text-2xl">
-                        <span className="text-lg">{items.title}</span>
+                        <span className="text-lg text-gray-900">{items.title}</span>
                         <span className="text-red-500 m-2">{items.required ? "(必填)" : ""}</span>
                       </Label>
                       <Input
-                        className="border-1 border-gray-300 bg-gray-100 rounded-md"
+                        className="bg-gray-100 rounded-lg focus:text-gray-600"
                         name={items.title}
                         onChange={(e) => {
                           setData({
@@ -250,7 +250,7 @@ export default function Home() {
                   ) : items.type == "2" ? (
                     <Fieldset>
                       <Legend>
-                        <span className="text-lg">{items.title}</span>
+                        <span className="text-lg text-gray-900">{items.title}</span>
                         <span className="text-red-500 m-0">{items.required ? "(必填)" : ""}</span>
                       </Legend>
                       <RadioGroup
@@ -272,8 +272,14 @@ export default function Home() {
                           <div key={index}>
                             {item.enable && (
                               <RadioField>
-                                <Radio value={`${item.id}@$${item.content}`} />
-                                <Label>{item.content}</Label>
+                                <Radio
+                                  className="bg-white rounded-full"
+                                  color="cyan"
+                                  value={`${item.id}@$${item.content}`}
+                                />
+                                <Label>
+                                  <span className="text-gray-600">{item.content}</span>
+                                </Label>
                               </RadioField>
                             )}
                           </div>
@@ -283,7 +289,7 @@ export default function Home() {
                   ) : items.type == "3" ? (
                     <Fieldset>
                       <Legend>
-                        <span className="text-lg">{items.title}</span>
+                        <span className="text-lg text-gray-900">{items.title}</span>
                         <span className="text-red-500 mx-2">{items.required ? "(必填)" : ""}</span>
                       </Legend>
                       <CheckboxGroup>
@@ -292,6 +298,8 @@ export default function Home() {
                             {item.enable && (
                               <CheckboxField>
                                 <Checkbox
+                                  className="bg-white rounded-sm"
+                                  color="cyan"
                                   name={items.id}
                                   onChange={(checked) => {
                                     if (checked) {
@@ -315,7 +323,9 @@ export default function Home() {
                                     }
                                   }}
                                 />
-                                <Label>{item.content}</Label>
+                                <Label>
+                                  <span className="text-gray-600">{item.content}</span>
+                                </Label>
                               </CheckboxField>
                             )}
                           </div>
@@ -325,7 +335,7 @@ export default function Home() {
                   ) : items.type == "4" ? (
                     <Field>
                       <Label>
-                        <span className="text-lg">{items.title}</span>
+                        <span className="text-lg text-gray-900">{items.title}</span>
                         <span className="text-red-500 mx-2">{items.required ? "(必填)" : ""}</span>
                       </Label>
                       <Input
@@ -346,11 +356,11 @@ export default function Home() {
                   ) : items.type == "5" ? (
                     <Field>
                       <Label>
-                        <span className="text-lg">{items.title}</span>
+                        <span className="text-lg text-gray-900">{items.title}</span>
                         <span className="text-red-500 mx-2">{items.required ? "(必填)" : ""}</span>
                       </Label>
                       <Textarea
-                        type="datetime-local"
+                        className="bg-gray-100 rounded-md text-blue-600"
                         name={items.title}
                         onChange={(e) => {
                           setData({
